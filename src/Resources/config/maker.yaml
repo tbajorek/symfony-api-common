@@ -1,0 +1,4 @@
+services:
+  api_common.maker.entity.config:
+    class: ApiCommon\Maker\Entity\ConfigMaker
+    tags: ['maker.command']

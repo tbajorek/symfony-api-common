@@ -1,5 +1,6 @@
 {
     "name": "tbajorek/symfony-api-common",
+    "version": "1.0.0",
     "description": "Set of code helping to create API application",
     "type": "library",
     "license": "MIT",
