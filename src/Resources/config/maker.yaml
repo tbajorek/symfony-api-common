@@ -1,4 +1,19 @@
 services:
+  api_common.maker.entity.config.value:
+    class: ApiCommon\Maker\Entity\Config\ValueMaker
+    arguments:
+      - '@maker.file_manager'
+      - '@maker.doctrine_helper'
+      - '@maker.entity_class_generator'
+  api_common.maker.entity.config.definition:
+    class: ApiCommon\Maker\Entity\Config\DefinitionMaker
+    arguments:
+      - '@maker.file_manager'
+      - '@maker.doctrine_helper'
+      - '@maker.entity_class_generator'
   api_common.maker.entity.config:
     class: ApiCommon\Maker\Entity\ConfigMaker
+    arguments:
+      - '@api_common.maker.entity.config.value'
+      - '@api_common.maker.entity.config.definition'
     tags: ['maker.command']

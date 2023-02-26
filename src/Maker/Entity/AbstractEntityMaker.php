@@ -46,6 +46,11 @@ abstract class AbstractEntityMaker extends AbstractMaker
     {
     }
 
+    public static function getCommandDescription(): string
+    {
+        return '';
+    }
+
     abstract public static function getEntityClass(): string;
 
     public function isApiResource(): bool
@@ -76,7 +81,7 @@ abstract class AbstractEntityMaker extends AbstractMaker
      */
     public function generate(InputInterface $input, ConsoleStyle $io, MakerGenerator $generator)
     {
-        $entityClass = self::getEntityClass();
+        $entityClass = static::getEntityClass();
         $overwrite = $input->getOption('overwrite');
 
         if ($input->getOption('regenerate')) {
@@ -86,22 +91,8 @@ abstract class AbstractEntityMaker extends AbstractMaker
             return;
         }
 
-        $overwrite = $input->getOption('overwrite');
-        $entityClassDetails = new ClassNameDetails(
-            $entityClass,
-            substr($entityClass, 0, strrpos($entityClass, '\\') + 1)
-        );
-
-        $classExists = class_exists($entityClassDetails->getFullName());
-        if (!$classExists) {
-            $entityPath = $this->entityClassGenerator->generateEntityClass(
-                $entityClassDetails,
-                $this->isApiResource()
-            );
-            $generator->writeChanges();
-        } else {
-            $entityPath = $this->fileManager->getRelativePathForFutureClass($entityClass);
-        }
+        $entityClassDetails = $this->getEntityClassDetails($entityClass);
+        $entityPath = $this->getEntityPath($entityClass, $generator);
 
         $manipulator = $this->createClassManipulator($entityPath, $io, $overwrite);
 
@@ -117,7 +108,8 @@ abstract class AbstractEntityMaker extends AbstractMaker
                     $otherManipulator = $manipulator;
                     $otherManipulatorFilename = $entityPath;
                 } else {
-                    $otherManipulatorFilename = $this->getPathOfClass($field->getInverseClass());
+                    $this->getEntityPath($field->getInverseClass(), $generator);
+                    $otherManipulatorFilename = $this->getEntityPath($field->getInverseClass(), $generator);
                     $otherManipulator = $this->createClassManipulator($otherManipulatorFilename, $io, $overwrite);
                 }
 
@@ -132,7 +124,7 @@ abstract class AbstractEntityMaker extends AbstractMaker
                             }
                         } else {
                             // the new field being added to THIS entity is the inverse
-                            $otherManipulatorFilename = $this->getPathOfClass($field->getOwningClass());
+                            $otherManipulatorFilename = $this->getEntityPath($field->getOwningClass(), $generator);
                             $otherManipulator = $this->createClassManipulator(
                                 $otherManipulatorFilename,
                                 $io,
@@ -181,6 +173,35 @@ abstract class AbstractEntityMaker extends AbstractMaker
         }
 
         $this->writeSuccessMessage($io);
+    }
+
+    private function getEntityClassDetails(string $entityClass): ClassNameDetails
+    {
+        return new ClassNameDetails(
+            $entityClass,
+            substr($entityClass, 0, strrpos($entityClass, '\\') + 1)
+        );
+    }
+
+    private function getEntityPath(string $entityClass, MakerGenerator $generator): string
+    {
+        $entityClassDetails = new ClassNameDetails(
+            $entityClass,
+            substr($entityClass, 0, strrpos($entityClass, '\\') + 1)
+        );
+
+        $classExists = class_exists($entityClassDetails->getFullName());
+        if (!$classExists) {
+            $entityPath = $this->entityClassGenerator->generateEntityClass(
+                $entityClassDetails,
+                $this->isApiResource()
+            );
+            $generator->writeChanges();
+            require_once($entityPath);
+        } else {
+            $entityPath = $this->fileManager->getRelativePathForFutureClass($entityClass);
+        }
+        return $entityPath;
     }
 
     /**

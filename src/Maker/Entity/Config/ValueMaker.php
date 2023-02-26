@@ -39,7 +39,6 @@ class ValueMaker extends AbstractEntityMaker
         );
         $definitionRelation->setOwningProperty('definition');
         $definitionRelation->setInverseProperty('values');
-        $definitionRelation->setMapInverseRelation(true);
         $definitionRelation->setIsNullable(false);
         $definitionRelation->setOrphanRemoval(true);
         yield $definitionRelation;

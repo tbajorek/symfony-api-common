@@ -31,7 +31,6 @@ class DefinitionMaker extends AbstractEntityMaker
         );
         $definitionRelation->setOwningProperty('group');
         $definitionRelation->setInverseProperty('definitions');
-        $definitionRelation->setMapInverseRelation(true);
         $definitionRelation->setIsNullable(false);
         $definitionRelation->setOrphanRemoval(true);
         yield $definitionRelation;
