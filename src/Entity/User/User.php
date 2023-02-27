@@ -49,11 +49,6 @@ class User implements EntityInterface, UserInterface, PasswordAuthenticatedUserI
     #[ORM\Column]
     private array $roles = [];
 
-    public function getId(): ?Uuid
-    {
-        return $this->id;
-    }
-
     public function getEmail(): ?string
     {
         return $this->email;
@@ -120,5 +115,10 @@ class User implements EntityInterface, UserInterface, PasswordAuthenticatedUserI
     public function getUserIdentifier(): string
     {
         return $this->getId() ? $this->getId()->toRfc4122() : '';
+    }
+
+    public function getId(): ?Uuid
+    {
+        return $this->id;
     }
 }

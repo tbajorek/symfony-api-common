@@ -17,7 +17,7 @@ interface GroupInterface extends EntityInterface
 
     public function getDefinitions(): Collection;
 
-    public function addDefinition(Definition $definition): self;
+    public function addDefinition(DefinitionInterface $definition): self;
 
-    public function removeDefinition(Definition $definition): self;
+    public function removeDefinition(DefinitionInterface $definition): self;
 }

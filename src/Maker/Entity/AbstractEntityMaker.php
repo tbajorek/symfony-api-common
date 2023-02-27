@@ -34,6 +34,11 @@ abstract class AbstractEntityMaker extends AbstractMaker
     {
     }
 
+    public static function getCommandDescription(): string
+    {
+        return '';
+    }
+
     public function configureCommand(Command $command, InputConfiguration $inputConfig)
     {
     }
@@ -44,36 +49,6 @@ abstract class AbstractEntityMaker extends AbstractMaker
 
     public function __call(string $name, array $arguments)
     {
-    }
-
-    public static function getCommandDescription(): string
-    {
-        return '';
-    }
-
-    abstract public static function getEntityClass(): string;
-
-    public function isApiResource(): bool
-    {
-        return false;
-    }
-
-    /**
-     * @return Generator
-     * @throws Exception
-     */
-    abstract public function getFields(): Generator;
-
-    public function getTraits(): array
-    {
-        return [];
-    }
-
-    public function getInterfaces(): array
-    {
-        return [
-            EntityInterface::class
-        ];
     }
 
     /**
@@ -94,7 +69,7 @@ abstract class AbstractEntityMaker extends AbstractMaker
         $entityClassDetails = $this->getEntityClassDetails($entityClass);
         $entityPath = $this->getEntityPath($entityClass, $generator);
 
-        $manipulator = $this->createClassManipulator($entityPath, $io, $overwrite);
+        $manipulator = $this->createClassManipulator($entityPath, $io, $overwrite, true);
 
         foreach ($this->getFields() as $field) {
             $io->comment($field instanceof EntityRelation ? $field->getOwningProperty() : $field->getName());
@@ -110,7 +85,8 @@ abstract class AbstractEntityMaker extends AbstractMaker
                 } else {
                     $this->getEntityPath($field->getInverseClass(), $generator);
                     $otherManipulatorFilename = $this->getEntityPath($field->getInverseClass(), $generator);
-                    $otherManipulator = $this->createClassManipulator($otherManipulatorFilename, $io, $overwrite);
+                    $otherManipulator = $this->createClassManipulator($otherManipulatorFilename, $io, $overwrite,
+                        false);
                 }
 
                 switch ($field->getType()) {
@@ -128,7 +104,8 @@ abstract class AbstractEntityMaker extends AbstractMaker
                             $otherManipulator = $this->createClassManipulator(
                                 $otherManipulatorFilename,
                                 $io,
-                                $overwrite
+                                $overwrite,
+                                false
                             );
 
                             // The *other* class will receive the ManyToOne
@@ -175,6 +152,23 @@ abstract class AbstractEntityMaker extends AbstractMaker
         $this->writeSuccessMessage($io);
     }
 
+    abstract public static function getEntityClass(): string;
+
+    /**
+     * @throws Exception
+     */
+    private function regenerateEntities(string $classOrNamespace, bool $overwrite, MakerGenerator $generator): void
+    {
+        $regenerator = new EntityRegenerator(
+            $this->doctrineHelper,
+            $this->fileManager,
+            $generator,
+            $this->entityClassGenerator,
+            $overwrite
+        );
+        $regenerator->regenerateEntities($classOrNamespace);
+    }
+
     private function getEntityClassDetails(string $entityClass): ClassNameDetails
     {
         return new ClassNameDetails(
@@ -204,43 +198,54 @@ abstract class AbstractEntityMaker extends AbstractMaker
         return $entityPath;
     }
 
-    /**
-     * @throws Exception
-     */
-    private function regenerateEntities(string $classOrNamespace, bool $overwrite, MakerGenerator $generator): void
+    public function isApiResource(): bool
     {
-        $regenerator = new EntityRegenerator(
-            $this->doctrineHelper,
-            $this->fileManager,
-            $generator,
-            $this->entityClassGenerator,
-            $overwrite
-        );
-        $regenerator->regenerateEntities($classOrNamespace);
+        return false;
     }
 
     private function createClassManipulator(
         string $path,
         ConsoleStyle $io,
-        bool $overwrite
+        bool $overwrite,
+        bool $currentManipulator
     ): ClassSourceManipulator {
         $manipulator = new ClassSourceManipulator(
             $this->fileManager->getFileContents($path),
             $overwrite,
         );
 
-        foreach ($this->getTraits() as $trait) {
-            $manipulator->addTrait($trait);
-        }
+        if ($currentManipulator) {
+            foreach ($this->getTraits() as $trait) {
+                $manipulator->addTrait($trait);
+            }
 
-        foreach ($this->getInterfaces() as $interface) {
-            $manipulator->addInterface($interface);
+            foreach ($this->getInterfaces() as $interface) {
+                $manipulator->addInterface($interface);
+            }
         }
 
         $manipulator->setIo($io);
 
         return $manipulator;
     }
+
+    public function getTraits(): array
+    {
+        return [];
+    }
+
+    public function getInterfaces(): array
+    {
+        return [
+            EntityInterface::class
+        ];
+    }
+
+    /**
+     * @return Generator
+     * @throws Exception
+     */
+    abstract public function getFields(): Generator;
 
     private function getPathOfClass(string $class): string
     {

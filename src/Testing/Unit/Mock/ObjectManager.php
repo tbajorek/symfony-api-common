@@ -26,6 +26,23 @@ class ObjectManager
     /**
      * @param string $className
      * @param array $arguments
+     * @return MockObject
+     * @throws MockException
+     * @throws ReflectionException
+     */
+    public function getFullMock(string $className, array $arguments = []): MockObject
+    {
+        $constructorArguments = $this->getConstructorArguments($className, $arguments);
+        try {
+            return $this->reflectionGetter->getClassReflection($className)->newInstanceArgs($constructorArguments);
+        } catch (BaseReflectionException $reflectionException) {
+            throw new ReflectionException($reflectionException->getMessage());
+        }
+    }
+
+    /**
+     * @param string $className
+     * @param array $arguments
      * @return array
      * @throws MockException
      * @throws ReflectionException
@@ -64,23 +81,6 @@ class ObjectManager
         return $constructorArguments;
     }
 
-    /**
-     * @param string $className
-     * @param array $arguments
-     * @return MockObject
-     * @throws MockException
-     * @throws ReflectionException
-     */
-    public function getFullMock(string $className, array $arguments = []): MockObject
-    {
-        $constructorArguments = $this->getConstructorArguments($className, $arguments);
-        try {
-            return $this->reflectionGetter->getClassReflection($className)->newInstanceArgs($constructorArguments);
-        } catch (BaseReflectionException $reflectionException) {
-            throw new ReflectionException($reflectionException->getMessage());
-        }
-    }
-
     public function getBasicMock(string $className): MockObject
     {
         return $this->testCase->getMockBuilder($className)
@@ -105,7 +105,8 @@ class ObjectManager
             'int' => 0,
             'float', 'double' => 0.0,
             'bool' => false,
-            'callable' => static function () {},
+            'callable' => static function () {
+            },
             default => throw new MockException(
                 sprintf(
                     'Default value of parameter %s with type %s can not be calculated',

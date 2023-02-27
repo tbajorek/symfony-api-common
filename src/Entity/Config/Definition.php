@@ -2,7 +2,6 @@
 
 namespace ApiCommon\Entity\Config;
 
-use ApiCommon\Entity\EntityInterface;
 use ApiCommon\Model\Config\BackendModel\DatabaseValue;
 use ApiCommon\Model\Config\Metadata;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Entity]
 #[Table(name: 'config_definitions')]
 #[UniqueEntity('path')]
-class Definition implements EntityInterface
+class Definition implements DefinitionInterface
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
@@ -42,7 +41,7 @@ class Definition implements EntityInterface
 
     #[ORM\ManyToOne(inversedBy: 'definitions')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?ConfigGroup $configGroup = null;
+    private ?GroupInterface $configGroup = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
@@ -137,26 +136,26 @@ class Definition implements EntityInterface
         return $this;
     }
 
-    public function getConfigGroup(): ?ConfigGroup
+    public function getConfigGroup(): ?GroupInterface
     {
         return $this->configGroup;
     }
 
-    public function setConfigGroup(?ConfigGroup $configGroup): self
+    public function setConfigGroup(?GroupInterface $configGroup): self
     {
         $this->configGroup = $configGroup;
         return $this;
     }
 
     /**
-     * @return Collection<int, Value>
+     * @return Collection<int, ValueInterface>
      */
     public function getValues(): Collection
     {
         return $this->values;
     }
 
-    public function addValue(Value $value): self
+    public function addValue(ValueInterface $value): self
     {
         if (!$this->values->contains($value)) {
             $this->values->add($value);
@@ -165,7 +164,7 @@ class Definition implements EntityInterface
         return $this;
     }
 
-    public function removeValue(Value $value): self
+    public function removeValue(ValueInterface $value): self
     {
         // set the owning side to null (unless already changed)
         if ($this->values->removeElement($value) && $value->getDefinition() === $this) {

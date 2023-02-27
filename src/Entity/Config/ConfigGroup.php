@@ -62,14 +62,14 @@ class ConfigGroup implements GroupInterface
     }
 
     /**
-     * @return Collection<int, Definition>
+     * @return Collection<int, DefinitionInterface>
      */
     public function getDefinitions(): Collection
     {
         return $this->definitions;
     }
 
-    public function addDefinition(Definition $definition): self
+    public function addDefinition(DefinitionInterface $definition): self
     {
         if (!$this->definitions->contains($definition)) {
             $this->definitions->add($definition);
@@ -78,7 +78,7 @@ class ConfigGroup implements GroupInterface
         return $this;
     }
 
-    public function removeDefinition(Definition $definition): self
+    public function removeDefinition(DefinitionInterface $definition): self
     {
         // set the owning side to null (unless already changed)
         if ($this->definitions->removeElement($definition) && $definition->getConfigGroup() === $this) {

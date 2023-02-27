@@ -8,7 +8,8 @@ abstract class AbstractModel implements ModelInterface
 {
     public function __construct(
         public Metadata $metadata
-    ) {}
+    ) {
+    }
 
     public function isRequired(): bool
     {

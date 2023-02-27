@@ -32,13 +32,13 @@ interface DefinitionInterface extends EntityInterface
 
     public function setMetadata(Metadata $metadata): self;
 
-    public function getConfigGroup(): ?ConfigGroup;
+    public function getConfigGroup(): ?GroupInterface;
 
-    public function setConfigGroup(?ConfigGroup $configGroup): self;
+    public function setConfigGroup(?GroupInterface $configGroup): self;
 
     public function getValues(): Collection;
 
-    public function addValue(Value $value): self;
+    public function addValue(ValueInterface $value): self;
 
-    public function removeValue(Value $value): self;
+    public function removeValue(ValueInterface $value): self;
 }

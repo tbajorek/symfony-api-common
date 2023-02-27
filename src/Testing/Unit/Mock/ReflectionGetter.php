@@ -15,17 +15,16 @@ class ReflectionGetter
 {
     /**
      * @param string $className
-     * @return ReflectionClass
+     * @return ReflectionParameter[]
      * @throws ReflectionException
      */
-    public function getClassReflection(string $className): ReflectionClass
+    public function getConstructorParameters(string $className): array
     {
-        if (!class_exists($className)) {
-            throw new ReflectionException(
-                sprintf('Class %s does not exist', $className)
-            );
+        $constructorReflection = $this->getConstructorReflection($className);
+        if ($constructorReflection === null) {
+            return [];
         }
-        return new ReflectionClass($className);
+        return $constructorReflection->getParameters();
     }
 
     /**
@@ -54,16 +53,17 @@ class ReflectionGetter
 
     /**
      * @param string $className
-     * @return ReflectionParameter[]
+     * @return ReflectionClass
      * @throws ReflectionException
      */
-    public function getConstructorParameters(string $className): array
+    public function getClassReflection(string $className): ReflectionClass
     {
-        $constructorReflection = $this->getConstructorReflection($className);
-        if ($constructorReflection === null) {
-            return [];
+        if (!class_exists($className)) {
+            throw new ReflectionException(
+                sprintf('Class %s does not exist', $className)
+            );
         }
-        return $constructorReflection->getParameters();
+        return new ReflectionClass($className);
     }
 
     public function getParameterClassReflection(ReflectionParameter $reflectionParameter): ?ReflectionClass

@@ -9,16 +9,8 @@ use Doctrine\DBAL\Types\Types;
 use Generator;
 use Symfony\Bundle\MakerBundle\Doctrine\EntityRelation;
 
-/**
- * @method string getCommandDescription()
- */
 class ValueMaker extends AbstractEntityMaker
 {
-    public static function getEntityClass(): string
-    {
-        return 'App\Entity\Config\ValueCopy';
-    }
-
     public function getInterfaces(): array
     {
         return [
@@ -47,5 +39,10 @@ class ValueMaker extends AbstractEntityMaker
         yield new EntityField('scopeId', 'uuid', true, ['unique' => false]);
         yield new EntityField('value', Types::STRING, false, ['length' => 255]);
         yield new EntityField('updatedAt', Types::DATETIME_MUTABLE, false, ['length' => 255]);
+    }
+
+    public static function getEntityClass(): string
+    {
+        return 'App\Entity\Config\ValueCopy';
     }
 }

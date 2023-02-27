@@ -16,4 +16,4 @@ services:
     arguments:
       - '@api_common.maker.entity.config.value'
       - '@api_common.maker.entity.config.definition'
-    tags: ['maker.command']
+    tags: [ 'maker.command' ]

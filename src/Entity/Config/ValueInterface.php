@@ -8,9 +8,9 @@ use Symfony\Component\Uid\Uuid;
 
 interface ValueInterface extends EntityInterface, UpdatedAtInterface
 {
-    public function getDefinition(): ?Definition;
+    public function getDefinition(): ?DefinitionInterface;
 
-    public function setDefinition(?Definition $definition): self;
+    public function setDefinition(?DefinitionInterface $definition): self;
 
     public function getScope(): ?string;
 

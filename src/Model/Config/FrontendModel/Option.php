@@ -7,7 +7,8 @@ class Option
     public function __construct(
         public string $key,
         public string $value
-    ) {}
+    ) {
+    }
 
     public function getKey(): string
     {

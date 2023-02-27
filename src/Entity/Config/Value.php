@@ -22,7 +22,7 @@ class Value implements ValueInterface
 
     #[ORM\ManyToOne(inversedBy: 'values')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Definition $definition = null;
+    private ?DefinitionInterface $definition = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
@@ -45,12 +45,12 @@ class Value implements ValueInterface
         return $this->id;
     }
 
-    public function getDefinition(): ?Definition
+    public function getDefinition(): ?DefinitionInterface
     {
         return $this->definition;
     }
 
-    public function setDefinition(?Definition $definition): self
+    public function setDefinition(?DefinitionInterface $definition): self
     {
         $this->definition = $definition;
         return $this;

@@ -11,5 +11,5 @@ use ApiCommon\Model\DataObject;
  */
 class Metadata extends DataObject
 {
-    
+
 }
