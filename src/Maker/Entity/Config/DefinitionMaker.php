@@ -3,11 +3,14 @@
 namespace ApiCommon\Maker\Entity\Config;
 
 use ApiCommon\Entity\Config\DefinitionInterface;
+use ApiCommon\Entity\Config\GroupInterface;
+use ApiCommon\Entity\Config\ValueInterface;
 use ApiCommon\Maker\Entity\AbstractEntityMaker;
+use ApiCommon\Model\Config\Metadata;
 use ApiCommon\Model\Maker\Entity\EntityField;
 use Doctrine\DBAL\Types\Types;
 use Generator;
-use Symfony\Bundle\MakerBundle\Doctrine\EntityRelation;
+use ApiCommon\Model\Maker\Entity\EntityRelation;
 
 class DefinitionMaker extends AbstractEntityMaker
 {
@@ -33,11 +36,13 @@ class DefinitionMaker extends AbstractEntityMaker
         $groupRelation->setInverseProperty('definitions');
         $groupRelation->setIsNullable(false);
         $groupRelation->setOrphanRemoval(true);
+        $groupRelation->setCustomReturnType(GroupInterface::class);
+        $groupRelation->setCustomInverseReturnType(DefinitionInterface::class);
         yield $groupRelation;
 
         yield new EntityField('frontendModel', Types::STRING, false, ['length' => 255]);
         yield new EntityField('backendModel', Types::STRING, false, ['length' => 255]);
-        yield new EntityField('metadata', Types::JSON);
+        yield new EntityField('metadata', Types::JSON, false, [], Metadata::class);
     }
 
     public static function getEntityClass(): string

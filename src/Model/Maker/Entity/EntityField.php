@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
  * @property bool $nullable
  * @property string $type
  * @property string $fieldName
+ * @property string $propertyType
  */
 class EntityField extends DataObject
 {
@@ -16,12 +17,14 @@ class EntityField extends DataObject
         string $name,
         string $type = Types::STRING,
         bool $nullable = false,
-        array $data = []
+        array $data = [],
+        ?string $propertyType = null
     ) {
         parent::__construct($data);
         $this->fieldName = $name;
         $this->type = $type;
         $this->nullable = $nullable;
+        $this->propertyType = $propertyType;
     }
 
     public function getName(): string
@@ -32,6 +35,11 @@ class EntityField extends DataObject
     public function getType(): string
     {
         return $this->type;
+    }
+
+    public function getPropertyType(): string
+    {
+        return $this->propertyType;
     }
 
     public function isNullable(): bool

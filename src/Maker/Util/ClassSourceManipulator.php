@@ -92,6 +92,15 @@ final class ClassSourceManipulator
             }
         }
 
+        $propertyType = $typeHint;
+        if (array_key_exists('propertyType', $columnOptions)) {
+            if ($columnOptions['propertyType']) {
+                $propertyType = $this->checkTypeIsClass($columnOptions['propertyType'])
+                    ? $this->addUseStatementIfNecessary($columnOptions['propertyType']) : $columnOptions['propertyType'];
+            }
+            unset($columnOptions['propertyType']);
+        }
+
         // 2) USE property type on property below, nullable
         // 3) If default value, then NOT nullable
 
@@ -100,16 +109,10 @@ final class ClassSourceManipulator
         $attributes[] = $this->buildAttributeNode(Column::class, $columnOptions, 'ORM');
 
         $defaultValue = null;
-        if ('array' === $typeHint) {
+        if ('array' === $propertyType) {
             $defaultValue = new Node\Expr\Array_([], ['kind' => Node\Expr\Array_::KIND_SHORT]);
-        } elseif ($typeHint && '\\' === $typeHint[0] && false !== strpos($typeHint, '\\', 1)) {
+        } elseif ($typeHint && $this->checkTypeIsClass($typeHint)) {
             $typeHint = $this->addUseStatementIfNecessary(substr($typeHint, 1));
-        }
-
-        $propertyType = $typeHint;
-        if ($propertyType && !$defaultValue) {
-            // all property types
-            $propertyType = '?'.$propertyType;
         }
 
         $this->addProperty(
@@ -117,12 +120,12 @@ final class ClassSourceManipulator
             defaultValue: $defaultValue,
             attributes: $attributes,
             comments: $comments,
-            propertyType: $propertyType
+            propertyType: ($propertyType && !$defaultValue) ? '?'.$propertyType : $propertyType
         );
 
         $this->addGetter(
             $propertyName,
-            $typeHint,
+            $propertyType,
             // getter methods always have nullable return values
             // because even though these are required in the db, they may not be set yet
             // unless there is a default value
@@ -131,7 +134,7 @@ final class ClassSourceManipulator
 
         // don't generate setters for id fields
         if (!$isId) {
-            $this->addSetter($propertyName, $typeHint, $nullable);
+            $this->addSetter($propertyName, $propertyType, $nullable);
         }
     }
 
@@ -382,6 +385,11 @@ final class ClassSourceManipulator
         $this->updateSourceCodeFromNewStmts();
     }
 
+    private function checkTypeIsClass(string $type): bool
+    {
+        return '\\' === $type[0] || false !== strpos($type, '\\', 1);
+    }
+
     private function addCustomGetter(string $propertyName, string $methodName, $returnType, bool $isReturnTypeNullable, array $commentLines = [], $typeCast = null): void
     {
         $propertyFetch = new Node\Expr\PropertyFetch(new Node\Expr\Variable('this'), $propertyName);
@@ -435,6 +443,7 @@ final class ClassSourceManipulator
     private function addSingularRelation(BaseRelation $relation): void
     {
         $typeHint = $this->addUseStatementIfNecessary($relation->getTargetClassName());
+        $phpType = $relation->getCustomReturnType() ? $this->addUseStatementIfNecessary($relation->getCustomReturnType()) : $typeHint;
         if ($relation->getTargetClassName() === $this->getThisFullClassName()) {
             $typeHint = 'self';
         }
@@ -474,12 +483,12 @@ final class ClassSourceManipulator
             name: $relation->getPropertyName(),
             defaultValue: null,
             attributes: $attributes,
-            propertyType: '?'.$typeHint,
+            propertyType: '?'.$phpType,
         );
 
         $this->addGetter(
             $relation->getPropertyName(),
-            $relation->getCustomReturnType() ?? $typeHint,
+            $phpType,
             // getter methods always have nullable return values
             // unless this has been customized explicitly
             !$relation->getCustomReturnType() || $relation->isCustomReturnTypeNullable()
@@ -491,7 +500,7 @@ final class ClassSourceManipulator
 
         $setterNodeBuilder = $this->createSetterNodeBuilder(
             $relation->getPropertyName(),
-            $typeHint,
+            $phpType,
             // make the type-hint nullable always for ManyToOne to allow the owning
             // side to be set to null, which is needed for orphanRemoval
             // (specifically: when you set the inverse side, the generated
@@ -520,6 +529,7 @@ final class ClassSourceManipulator
     private function addCollectionRelation(BaseCollectionRelation $relation): void
     {
         $typeHint = $relation->isSelfReferencing() ? 'self' : $this->addUseStatementIfNecessary($relation->getTargetClassName());
+        $phpType = $relation->getCustomReturnType() ? $this->addUseStatementIfNecessary($relation->getCustomReturnType()) : $typeHint;
 
         $arrayCollectionTypeHint = $this->addUseStatementIfNecessary(ArrayCollection::class);
         $collectionTypeHint = $this->addUseStatementIfNecessary(Collection::class);
@@ -580,7 +590,7 @@ final class ClassSourceManipulator
             $collectionTypeHint,
             false,
             // add @return that advertises this as a collection of specific objects
-            [sprintf('@return %s<int, %s>', $collectionTypeHint, $typeHint)]
+            [sprintf('@return %s<int, %s>', $collectionTypeHint, $phpType)]
         );
 
         $argName = Str::pluralCamelCaseToSingular($relation->getPropertyName());
@@ -589,7 +599,7 @@ final class ClassSourceManipulator
         $adderNodeBuilder = (new Builder\Method($relation->getAdderMethodName()))->makePublic();
 
         $paramBuilder = new Builder\Param($argName);
-        $paramBuilder->setType($typeHint);
+        $paramBuilder->setType($phpType);
         $adderNodeBuilder->addParam($paramBuilder->getNode());
 
         // if (!$this->avatars->contains($avatar))
@@ -631,7 +641,7 @@ final class ClassSourceManipulator
         $removerNodeBuilder = (new Builder\Method($relation->getRemoverMethodName()))->makePublic();
 
         $paramBuilder = new Builder\Param($argName);
-        $paramBuilder->setTypeHint($typeHint);
+        $paramBuilder->setTypeHint($phpType);
         $removerNodeBuilder->addParam($paramBuilder->getNode());
 
         // $this->avatars->removeElement($avatar)
@@ -1061,7 +1071,6 @@ final class ClassSourceManipulator
     private function makeMethodFluent(Builder\Method $methodBuilder): void
     {
         $methodBuilder
-            ->addStmt($this->createBlankLineNode(self::CONTEXT_CLASS_METHOD))
             ->addStmt(new Node\Stmt\Return_(new Node\Expr\Variable('this')));
         $methodBuilder->setReturnType('self');
     }

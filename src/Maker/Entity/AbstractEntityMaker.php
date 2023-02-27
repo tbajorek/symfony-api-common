@@ -11,7 +11,7 @@ use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
 use Symfony\Bundle\MakerBundle\Doctrine\EntityRegenerator;
-use Symfony\Bundle\MakerBundle\Doctrine\EntityRelation;
+use ApiCommon\Model\Maker\Entity\EntityRelation;
 use Symfony\Bundle\MakerBundle\FileManager;
 use Symfony\Bundle\MakerBundle\Generator as MakerGenerator;
 use Symfony\Bundle\MakerBundle\InputConfiguration;
@@ -89,7 +89,6 @@ abstract class AbstractEntityMaker extends AbstractMaker
                     $otherManipulator = $manipulator;
                     $otherManipulatorFilename = $entityPath;
                 } else {
-                    $this->getEntityPath($field->getInverseClass(), $generator);
                     $otherManipulatorFilename = $this->getEntityPath($field->getInverseClass(), $generator);
                     $otherManipulator = $this->createClassManipulator(
                         $otherManipulatorFilename,

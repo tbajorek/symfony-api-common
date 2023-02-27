@@ -4,9 +4,10 @@ namespace ApiCommon\Maker\Entity\Config;
 
 use ApiCommon\Entity\Config\GroupInterface;
 use ApiCommon\Maker\Entity\AbstractEntityMaker;
-use ApiCommon\Model\Maker\Entity\EntityField;
+use ApiCommon\Model\Maker\Entity\EntityRelation;
 use Doctrine\DBAL\Types\Types;
 use Generator;
+use ApiCommon\Model\Maker\Entity\EntityField;
 
 class ConfigGroupMaker extends AbstractEntityMaker
 {

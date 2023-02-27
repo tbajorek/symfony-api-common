@@ -3,6 +3,7 @@
 namespace <?= $namespace ?>;
 
 <?= $use_statements; ?>
+
 #[ORM\Entity<?php if ($repository_class_name): ?>(repositoryClass: <?= $repository_class_name ?>::class)<?php endif ?>]
 <?php if ($table_name): ?>
 <?php if ($should_escape_table_name): ?>#[ORM\Table(name: '`<?= $table_name ?>`')]

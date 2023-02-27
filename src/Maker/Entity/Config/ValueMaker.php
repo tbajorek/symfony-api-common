@@ -7,7 +7,8 @@ use ApiCommon\Maker\Entity\AbstractEntityMaker;
 use ApiCommon\Model\Maker\Entity\EntityField;
 use Doctrine\DBAL\Types\Types;
 use Generator;
-use Symfony\Bundle\MakerBundle\Doctrine\EntityRelation;
+use ApiCommon\Model\Maker\Entity\EntityRelation;
+use ApiCommon\Entity\Config\DefinitionInterface;
 
 class ValueMaker extends AbstractEntityMaker
 {
@@ -24,7 +25,7 @@ class ValueMaker extends AbstractEntityMaker
      */
     public function getFields(): Generator
     {
-        $definitionRelation = new EntityRelation(
+        $definitionRelation = new \ApiCommon\Model\Maker\Entity\EntityRelation(
             EntityRelation::MANY_TO_ONE,
             self::getEntityClass(),
             DefinitionMaker::getEntityClass()
@@ -33,6 +34,8 @@ class ValueMaker extends AbstractEntityMaker
         $definitionRelation->setInverseProperty('values');
         $definitionRelation->setIsNullable(false);
         $definitionRelation->setOrphanRemoval(true);
+        $definitionRelation->setCustomReturnType(DefinitionInterface::class);
+        $definitionRelation->setCustomInverseReturnType(ValueInterface::class);
         yield $definitionRelation;
 
         yield new EntityField('scope', Types::STRING, false, ['length' => 255]);

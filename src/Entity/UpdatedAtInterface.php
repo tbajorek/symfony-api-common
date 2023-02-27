@@ -2,11 +2,11 @@
 
 namespace ApiCommon\Entity;
 
-use DateTime;
+use DateTimeInterface;
 
 interface UpdatedAtInterface
 {
-    public function getUpdatedAt(): ?DateTime;
+    public function getUpdatedAt(): ?DateTimeInterface;
 
-    public function setUpdatedAt(DateTime $updatedAt): self;
+    public function setUpdatedAt(DateTimeInterface $updatedAt): self;
 }
