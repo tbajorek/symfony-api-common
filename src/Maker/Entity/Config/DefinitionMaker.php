@@ -24,24 +24,44 @@ class DefinitionMaker extends AbstractEntityMaker
         yield new EntityField('label', Types::STRING, false, ['length' => 255]);
         yield new EntityField('sortOrder', Types::INTEGER);
 
-        $definitionRelation = new EntityRelation(
+        $groupRelation = new EntityRelation(
             EntityRelation::MANY_TO_ONE,
             self::getEntityClass(),
             ConfigGroupMaker::getEntityClass()
         );
-        $definitionRelation->setOwningProperty('group');
-        $definitionRelation->setInverseProperty('definitions');
-        $definitionRelation->setIsNullable(false);
-        $definitionRelation->setOrphanRemoval(true);
-        yield $definitionRelation;
+        $groupRelation->setOwningProperty('configGroup');
+        $groupRelation->setInverseProperty('definitions');
+        $groupRelation->setIsNullable(false);
+        $groupRelation->setOrphanRemoval(true);
+        yield $groupRelation;
 
         yield new EntityField('frontendModel', Types::STRING, false, ['length' => 255]);
         yield new EntityField('backendModel', Types::STRING, false, ['length' => 255]);
-        yield new EntityField('backendModel', Types::JSON);
+        yield new EntityField('metadata', Types::JSON);
     }
 
     public static function getEntityClass(): string
     {
-        return 'App\Entity\Config\DefinitionCopy';
+        return 'App\Entity\Config\Definition';
+    }
+
+    public static function getTableName(): ?string
+    {
+        return 'config_definitions';
+    }
+
+    public static function getUniqueConstraintFields(): array
+    {
+        return [
+            'path'
+        ];
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            ValueMaker::class,
+            ConfigGroupMaker::class
+        ];
     }
 }

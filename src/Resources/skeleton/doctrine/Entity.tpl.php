@@ -1,14 +1,19 @@
-<?= "<?php\n" ?>
+<?= "<?php declare(strict_types=1);\n" ?>
 
 namespace <?= $namespace ?>;
 
 <?= $use_statements; ?>
-
-#[ORM\Entity(repositoryClass: <?= $repository_class_name ?>::class)]
+#[ORM\Entity<?php if ($repository_class_name): ?>(repositoryClass: <?= $repository_class_name ?>::class)<?php endif ?>]
+<?php if ($table_name): ?>
 <?php if ($should_escape_table_name): ?>#[ORM\Table(name: '`<?= $table_name ?>`')]
+<?php else: ?>#[ORM\Table(name: '<?= $table_name ?>')]
+<?php endif ?>
 <?php endif ?>
 <?php if ($api_resource): ?>
-    #[ApiResource]
+#[ApiResource]
+<?php endif ?>
+<?php if ($unique_constraint_fields): ?>
+#[UniqueEntity(['<?= $unique_constraint_fields ?>'])]
 <?php endif ?>
 class <?= $class_name."\n" ?>
 {

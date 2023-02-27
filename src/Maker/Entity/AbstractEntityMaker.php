@@ -4,6 +4,7 @@ namespace ApiCommon\Maker\Entity;
 
 use ApiCommon\Entity\EntityInterface;
 use ApiCommon\Model\Maker\Entity\EntityClassGenerator;
+use ApiCommon\Model\Maker\Entity\EntityField;
 use Exception;
 use Generator;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
@@ -17,17 +18,21 @@ use Symfony\Bundle\MakerBundle\InputConfiguration;
 use Symfony\Bundle\MakerBundle\Maker\AbstractMaker;
 use Symfony\Bundle\MakerBundle\Util\ClassDetails;
 use Symfony\Bundle\MakerBundle\Util\ClassNameDetails;
-use Symfony\Bundle\MakerBundle\Util\ClassSourceManipulator;
+use ApiCommon\Maker\Util\ClassSourceManipulator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use ApiCommon\Model\Maker\Entity\DependencyManager;
 
 abstract class AbstractEntityMaker extends AbstractMaker
 {
+    private readonly DependencyManager $dependencyManager;
+
     public function __construct(
         private readonly FileManager $fileManager,
         private readonly DoctrineHelper $doctrineHelper,
         private readonly EntityClassGenerator $entityClassGenerator
     ) {
+        $this->dependencyManager = new DependencyManager(static::class);
     }
 
     public static function getCommandName(): string
@@ -71,6 +76,7 @@ abstract class AbstractEntityMaker extends AbstractMaker
 
         $manipulator = $this->createClassManipulator($entityPath, $io, $overwrite, true);
 
+        /** @var EntityRelation|EntityField $field */
         foreach ($this->getFields() as $field) {
             $io->comment($field instanceof EntityRelation ? $field->getOwningProperty() : $field->getName());
 
@@ -156,8 +162,6 @@ abstract class AbstractEntityMaker extends AbstractMaker
         $this->writeSuccessMessage($io);
     }
 
-    abstract public static function getEntityClass(): string;
-
     /**
      * @throws Exception
      */
@@ -192,7 +196,11 @@ abstract class AbstractEntityMaker extends AbstractMaker
         if (!$classExists) {
             $entityPath = $this->entityClassGenerator->generateEntityClass(
                 $entityClassDetails,
-                $this->isApiResource()
+                $this->dependencyManager->getDependencyForEntity($entityClass, $this->getDependencies())::getTableName(),
+                $this->dependencyManager->getDependencyForEntity($entityClass, $this->getDependencies())::isApiResource(),
+                $this->dependencyManager->getDependencyForEntity($entityClass, $this->getDependencies())::isPasswordUpgradeGenerated(),
+                $this->dependencyManager->getDependencyForEntity($entityClass, $this->getDependencies())::isRepositoryGenerated(),
+                $this->dependencyManager->getDependencyForEntity($entityClass, $this->getDependencies())::getUniqueConstraintFields()
             );
             $generator->writeChanges();
             require_once($entityPath);
@@ -200,11 +208,6 @@ abstract class AbstractEntityMaker extends AbstractMaker
             $entityPath = $this->fileManager->getRelativePathForFutureClass($entityClass);
         }
         return $entityPath;
-    }
-
-    public function isApiResource(): bool
-    {
-        return false;
     }
 
     private function createClassManipulator(
@@ -233,6 +236,32 @@ abstract class AbstractEntityMaker extends AbstractMaker
         return $manipulator;
     }
 
+
+    public static function getTableName(): ?string
+    {
+        return null;
+    }
+
+    public static function isApiResource(): bool
+    {
+        return false;
+    }
+
+    public static function isPasswordUpgradeGenerated(): bool
+    {
+        return false;
+    }
+
+    public static function isRepositoryGenerated(): bool
+    {
+        return false;
+    }
+
+    public static function getUniqueConstraintFields(): array
+    {
+        return [];
+    }
+
     public function getTraits(): array
     {
         return [];
@@ -245,9 +274,16 @@ abstract class AbstractEntityMaker extends AbstractMaker
         ];
     }
 
+    public function getDependencies(): array
+    {
+        return [];
+    }
+
     /**
      * @return Generator
      * @throws Exception
      */
     abstract public function getFields(): Generator;
+
+    abstract public static function getEntityClass(): string;
 }

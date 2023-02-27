@@ -12,7 +12,12 @@ class ConfigGroupMaker extends AbstractEntityMaker
 {
     public static function getEntityClass(): string
     {
-        return 'App\Entity\Config\ConfigGroupCopy';
+        return 'App\Entity\Config\ConfigGroup';
+    }
+
+    public static function getTableName(): ?string
+    {
+        return 'config_groups';
     }
 
     public function getInterfaces(): array
@@ -26,5 +31,13 @@ class ConfigGroupMaker extends AbstractEntityMaker
     {
         yield new EntityField('label', Types::STRING, false, ['length' => 255]);
         yield new EntityField('sortOrder', Types::INTEGER);
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            ValueMaker::class,
+            DefinitionMaker::class
+        ];
     }
 }

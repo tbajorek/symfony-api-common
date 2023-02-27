@@ -29,9 +29,11 @@ class EntityClassGenerator
      */
     public function generateEntityClass(
         ClassNameDetails $entityClassDetails,
+        ?string $tableName,
         bool $apiResource,
         bool $withPasswordUpgrade = false,
-        bool $generateRepositoryClass = true
+        bool $generateRepositoryClass = true,
+        array $uniqueConstraintFields = []
     ): string {
         $repoClassDetails = $this->generator->createClassNameDetails(
             str_replace('App\\Entity\\', '', $entityClassDetails->getFullName()),
@@ -39,11 +41,13 @@ class EntityClassGenerator
             'Repository'
         );
 
-        $tableName = $this->doctrineHelper->getPotentialTableName($entityClassDetails->getFullName());
+        $potentialTableName = $this->doctrineHelper->getPotentialTableName($entityClassDetails->getFullName());
+        if (!$tableName) {
+            $tableName = $potentialTableName;
+        }
 
         $useStatements = new UseStatementGenerator([
-            $repoClassDetails->getFullName(),
-            Symfony\Component\Uid\Uuid::class,
+            'Symfony\Component\Uid\Uuid',
             ['Doctrine\\ORM\\Mapping' => 'ORM'],
         ]);
 
@@ -54,15 +58,26 @@ class EntityClassGenerator
             );
         }
 
+        if ($generateRepositoryClass) {
+            $useStatements->addUseStatement($repoClassDetails->getFullName());
+        }
+
+        $uniqueFields = '';
+        if ($uniqueConstraintFields) {
+            $uniqueFields = implode('\', \'', $uniqueConstraintFields);
+            $useStatements->addUseStatement('Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity');
+        }
+
         $entityPath = $this->generator->generateClass(
             $entityClassDetails->getFullName(),
             $this->getTemplatePath('doctrine/Entity.tpl.php'),
             [
                 'use_statements' => $useStatements,
-                'repository_class_name' => $repoClassDetails->getShortName(),
+                'repository_class_name' => $generateRepositoryClass ? $repoClassDetails->getShortName() : null,
                 'api_resource' => $apiResource,
                 'should_escape_table_name' => $this->doctrineHelper->isKeyword($tableName),
-                'table_name' => $tableName,
+                'table_name' => $tableName !== $potentialTableName ? $tableName : null,
+                'unique_constraint_fields' => $uniqueFields,
             ]
         );
 

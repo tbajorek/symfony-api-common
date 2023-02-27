@@ -41,8 +41,21 @@ class ValueMaker extends AbstractEntityMaker
         yield new EntityField('updatedAt', Types::DATETIME_MUTABLE, false, ['length' => 255]);
     }
 
+    public function getDependencies(): array
+    {
+        return [
+            DefinitionMaker::class,
+            ConfigGroupMaker::class
+        ];
+    }
+
     public static function getEntityClass(): string
     {
-        return 'App\Entity\Config\ValueCopy';
+        return 'App\Entity\Config\Value';
+    }
+
+    public static function getTableName(): ?string
+    {
+        return 'config_values';
     }
 }

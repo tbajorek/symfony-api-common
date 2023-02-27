@@ -22,8 +22,10 @@ final class ApiCommonExtension extends Extension
             $container,
             new FileLocator(__DIR__ . '/../Resources/config')
         );
-        $loader->load('maker.yaml');
         $loader->load('services.yaml');
+
+        $loader->load('maker.yaml');
+
 
         $container->setParameter('api_common.config.data', $config);
     }

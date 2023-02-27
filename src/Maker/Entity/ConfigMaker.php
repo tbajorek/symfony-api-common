@@ -6,6 +6,7 @@ use ApiCommon\Maker\Entity\Config\ConfigGroupMaker;
 use ApiCommon\Maker\Entity\Config\DefinitionMaker;
 use ApiCommon\Maker\Entity\Config\ValueMaker;
 use Exception;
+use Psr\Container\ContainerInterface;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\Generator;
@@ -20,7 +21,7 @@ class ConfigMaker extends AbstractMaker
     public function __construct(
         private readonly ValueMaker $valueMaker,
         private readonly DefinitionMaker $definitionMaker,
-        private readonly ConfigGroupMaker $groupMaker,
+        private readonly ConfigGroupMaker $configGroupMaker
     ) {
     }
 
@@ -48,7 +49,7 @@ class ConfigMaker extends AbstractMaker
     {
         $this->valueMaker->generate($input, $io, $generator);
         $this->definitionMaker->generate($input, $io, $generator);
-        $this->groupMaker->generate($input, $io, $generator);
+        $this->configGroupMaker->generate($input, $io, $generator);
     }
 
     public function __call(string $name, array $arguments)
