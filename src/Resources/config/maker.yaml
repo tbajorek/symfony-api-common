@@ -1,19 +1,27 @@
 services:
+  api_common.maker.entity_class_generator:
+    class: ApiCommon\Model\Maker\Entity\EntityClassGenerator
+    parent: maker.entity_class_generator
+  api_common.maker.entity.abstract:
+    abstract: true
+    class: ApiCommon\Maker\Entity\AbstractEntityMaker
+    arguments:
+      - '@maker.file_manager'
+      - '@maker.doctrine_helper'
+      - '@api_common.maker.entity_class_generator'
   api_common.maker.entity.config.value:
     class: ApiCommon\Maker\Entity\Config\ValueMaker
-    arguments:
-      - '@maker.file_manager'
-      - '@maker.doctrine_helper'
-      - '@maker.entity_class_generator'
+    parent: api_common.maker.entity.abstract
   api_common.maker.entity.config.definition:
     class: ApiCommon\Maker\Entity\Config\DefinitionMaker
-    arguments:
-      - '@maker.file_manager'
-      - '@maker.doctrine_helper'
-      - '@maker.entity_class_generator'
+    parent: api_common.maker.entity.abstract
+  api_common.maker.entity.config.group:
+    class: ApiCommon\Maker\Entity\Config\ConfigGroupMaker
+    parent: api_common.maker.entity.abstract
   api_common.maker.entity.config:
     class: ApiCommon\Maker\Entity\ConfigMaker
     arguments:
       - '@api_common.maker.entity.config.value'
       - '@api_common.maker.entity.config.definition'
+      - '@api_common.maker.entity.config.group'
     tags: [ 'maker.command' ]

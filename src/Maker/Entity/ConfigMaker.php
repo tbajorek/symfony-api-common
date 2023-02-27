@@ -2,6 +2,7 @@
 
 namespace ApiCommon\Maker\Entity;
 
+use ApiCommon\Maker\Entity\Config\ConfigGroupMaker;
 use ApiCommon\Maker\Entity\Config\DefinitionMaker;
 use ApiCommon\Maker\Entity\Config\ValueMaker;
 use Exception;
@@ -14,14 +15,12 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 
-/**
- * @method string getCommandDescription()
- */
 class ConfigMaker extends AbstractMaker
 {
     public function __construct(
         private readonly ValueMaker $valueMaker,
         private readonly DefinitionMaker $definitionMaker,
+        private readonly ConfigGroupMaker $groupMaker,
     ) {
     }
 
@@ -49,9 +48,15 @@ class ConfigMaker extends AbstractMaker
     {
         $this->valueMaker->generate($input, $io, $generator);
         $this->definitionMaker->generate($input, $io, $generator);
+        $this->groupMaker->generate($input, $io, $generator);
     }
 
     public function __call(string $name, array $arguments)
     {
+    }
+
+    public static function getCommandDescription(): string
+    {
+        return 'Creates application configuration entities';
     }
 }

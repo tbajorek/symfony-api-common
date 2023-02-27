@@ -15,10 +15,16 @@ final class ApiCommonExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
+
         $loader = new YamlFileLoader(
             $container,
             new FileLocator(__DIR__ . '/../Resources/config')
         );
         $loader->load('maker.yaml');
+        $loader->load('services.yaml');
+
+        $container->setParameter('api_common.config.data', $config);
     }
 }

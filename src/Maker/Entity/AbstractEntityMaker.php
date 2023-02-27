@@ -3,12 +3,12 @@
 namespace ApiCommon\Maker\Entity;
 
 use ApiCommon\Entity\EntityInterface;
+use ApiCommon\Model\Maker\Entity\EntityClassGenerator;
 use Exception;
 use Generator;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
-use Symfony\Bundle\MakerBundle\Doctrine\EntityClassGenerator;
 use Symfony\Bundle\MakerBundle\Doctrine\EntityRegenerator;
 use Symfony\Bundle\MakerBundle\Doctrine\EntityRelation;
 use Symfony\Bundle\MakerBundle\FileManager;
@@ -54,7 +54,7 @@ abstract class AbstractEntityMaker extends AbstractMaker
     /**
      * @throws Exception
      */
-    public function generate(InputInterface $input, ConsoleStyle $io, MakerGenerator $generator)
+    public function generate(InputInterface $input, ConsoleStyle $io, MakerGenerator $generator): void
     {
         $entityClass = static::getEntityClass();
         $overwrite = $input->getOption('overwrite');
@@ -85,8 +85,12 @@ abstract class AbstractEntityMaker extends AbstractMaker
                 } else {
                     $this->getEntityPath($field->getInverseClass(), $generator);
                     $otherManipulatorFilename = $this->getEntityPath($field->getInverseClass(), $generator);
-                    $otherManipulator = $this->createClassManipulator($otherManipulatorFilename, $io, $overwrite,
-                        false);
+                    $otherManipulator = $this->createClassManipulator(
+                        $otherManipulatorFilename,
+                        $io,
+                        $overwrite,
+                        false
+                    );
                 }
 
                 switch ($field->getType()) {
@@ -246,9 +250,4 @@ abstract class AbstractEntityMaker extends AbstractMaker
      * @throws Exception
      */
     abstract public function getFields(): Generator;
-
-    private function getPathOfClass(string $class): string
-    {
-        return (new ClassDetails($class))->getPath();
-    }
 }

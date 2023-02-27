@@ -1,0 +1,5 @@
+services:
+  api_common.model.configuration:
+    class: ApiCommon\Model\Configuration
+    arguments:
+      - '%api_common.config.data%'

@@ -4,7 +4,7 @@ namespace ApiCommon\Maker\Entity\Config;
 
 use ApiCommon\Entity\Config\DefinitionInterface;
 use ApiCommon\Maker\Entity\AbstractEntityMaker;
-use ApiCommon\Model\Maker\EntityField;
+use ApiCommon\Model\Maker\Entity\EntityField;
 use Doctrine\DBAL\Types\Types;
 use Generator;
 use Symfony\Bundle\MakerBundle\Doctrine\EntityRelation;

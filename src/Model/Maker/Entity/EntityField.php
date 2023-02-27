@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace ApiCommon\Model\Maker;
+namespace ApiCommon\Model\Maker\Entity;
 
 use ApiCommon\Model\DataObject;
 use Doctrine\DBAL\Types\Types;
