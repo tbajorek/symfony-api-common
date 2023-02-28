@@ -27,8 +27,8 @@ class ValueMaker extends AbstractEntityMaker
     {
         $definitionRelation = new \ApiCommon\Model\Maker\Entity\EntityRelation(
             EntityRelation::MANY_TO_ONE,
-            self::getEntityClass(),
-            DefinitionMaker::getEntityClass()
+            $this->classNameResolver->resolve(self::getEntityClassName()),
+            $this->classNameResolver->resolve(DefinitionMaker::getEntityClassName())
         );
         $definitionRelation->setOwningProperty('definition');
         $definitionRelation->setInverseProperty('values');
@@ -52,9 +52,9 @@ class ValueMaker extends AbstractEntityMaker
         ];
     }
 
-    public static function getEntityClass(): string
+    public static function getEntityClassName(): string
     {
-        return 'App\Entity\Config\Value';
+        return 'Config\\Value';
     }
 
     public static function getTableName(): ?string

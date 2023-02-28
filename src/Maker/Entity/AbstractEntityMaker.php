@@ -3,25 +3,23 @@
 namespace ApiCommon\Maker\Entity;
 
 use ApiCommon\Entity\EntityInterface;
+use ApiCommon\Maker\Util\ClassSourceManipulator;
+use ApiCommon\Model\Maker\Entity\ClassNameResolver;
+use ApiCommon\Model\Maker\Entity\DependencyManager;
 use ApiCommon\Model\Maker\Entity\EntityClassGenerator;
 use ApiCommon\Model\Maker\Entity\EntityField;
+use ApiCommon\Model\Maker\Entity\EntityRelation;
 use Exception;
 use Generator;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
-use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
-use Symfony\Bundle\MakerBundle\Doctrine\EntityRegenerator;
-use ApiCommon\Model\Maker\Entity\EntityRelation;
 use Symfony\Bundle\MakerBundle\FileManager;
 use Symfony\Bundle\MakerBundle\Generator as MakerGenerator;
 use Symfony\Bundle\MakerBundle\InputConfiguration;
 use Symfony\Bundle\MakerBundle\Maker\AbstractMaker;
-use Symfony\Bundle\MakerBundle\Util\ClassDetails;
 use Symfony\Bundle\MakerBundle\Util\ClassNameDetails;
-use ApiCommon\Maker\Util\ClassSourceManipulator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use ApiCommon\Model\Maker\Entity\DependencyManager;
 
 abstract class AbstractEntityMaker extends AbstractMaker
 {
@@ -29,25 +27,37 @@ abstract class AbstractEntityMaker extends AbstractMaker
 
     public function __construct(
         private readonly FileManager $fileManager,
-        private readonly DoctrineHelper $doctrineHelper,
-        private readonly EntityClassGenerator $entityClassGenerator
+        private readonly EntityClassGenerator $entityClassGenerator,
+        protected readonly ClassNameResolver $classNameResolver
     ) {
-        $this->dependencyManager = new DependencyManager(static::class);
+        $this->dependencyManager = new DependencyManager(static::class, $this->classNameResolver);
     }
 
+    /**
+     * @inheritdoc
+     */
     public static function getCommandName(): string
     {
     }
 
+    /**
+     * @inheritdoc
+     */
     public static function getCommandDescription(): string
     {
         return '';
     }
 
+    /**
+     * @inheritdoc
+     */
     public function configureCommand(Command $command, InputConfiguration $inputConfig)
     {
     }
 
+    /**
+     * @inheritdoc
+     */
     public function configureDependencies(DependencyBuilder $dependencies)
     {
     }
@@ -61,15 +71,8 @@ abstract class AbstractEntityMaker extends AbstractMaker
      */
     public function generate(InputInterface $input, ConsoleStyle $io, MakerGenerator $generator): void
     {
-        $entityClass = static::getEntityClass();
+        $entityClass = $this->classNameResolver->resolve(static::getEntityClassName());
         $overwrite = $input->getOption('overwrite');
-
-        if ($input->getOption('regenerate')) {
-            $this->regenerateEntities($input->getArgument('name'), $overwrite, $generator);
-            $this->writeSuccessMessage($io);
-
-            return;
-        }
 
         $entityClassDetails = $this->getEntityClassDetails($entityClass);
         $entityPath = $this->getEntityPath($entityClass, $generator);
@@ -161,21 +164,6 @@ abstract class AbstractEntityMaker extends AbstractMaker
         $this->writeSuccessMessage($io);
     }
 
-    /**
-     * @throws Exception
-     */
-    private function regenerateEntities(string $classOrNamespace, bool $overwrite, MakerGenerator $generator): void
-    {
-        $regenerator = new EntityRegenerator(
-            $this->doctrineHelper,
-            $this->fileManager,
-            $generator,
-            $this->entityClassGenerator,
-            $overwrite
-        );
-        $regenerator->regenerateEntities($classOrNamespace);
-    }
-
     private function getEntityClassDetails(string $entityClass): ClassNameDetails
     {
         return new ClassNameDetails(
@@ -195,11 +183,15 @@ abstract class AbstractEntityMaker extends AbstractMaker
         if (!$classExists) {
             $entityPath = $this->entityClassGenerator->generateEntityClass(
                 $entityClassDetails,
-                $this->dependencyManager->getDependencyForEntity($entityClass, $this->getDependencies())::getTableName(),
-                $this->dependencyManager->getDependencyForEntity($entityClass, $this->getDependencies())::isApiResource(),
-                $this->dependencyManager->getDependencyForEntity($entityClass, $this->getDependencies())::isPasswordUpgradeGenerated(),
-                $this->dependencyManager->getDependencyForEntity($entityClass, $this->getDependencies())::isRepositoryGenerated(),
-                $this->dependencyManager->getDependencyForEntity($entityClass, $this->getDependencies())::getUniqueConstraintFields()
+                $this->dependencyManager->getDependencyForEntity($entityClass,
+                    $this->getDependencies())::getTableName(),
+                $this->dependencyManager->getDependencyForEntity($entityClass,
+                    $this->getDependencies())::isApiResource(),
+                false,
+                $this->dependencyManager->getDependencyForEntity($entityClass,
+                    $this->getDependencies())::isRepositoryGenerated(),
+                $this->dependencyManager->getDependencyForEntity($entityClass,
+                    $this->getDependencies())::getUniqueConstraintFields()
             );
             $generator->writeChanges();
             require_once($entityPath);
@@ -235,18 +227,12 @@ abstract class AbstractEntityMaker extends AbstractMaker
         return $manipulator;
     }
 
-
     public static function getTableName(): ?string
     {
         return null;
     }
 
     public static function isApiResource(): bool
-    {
-        return false;
-    }
-
-    public static function isPasswordUpgradeGenerated(): bool
     {
         return false;
     }
@@ -284,5 +270,5 @@ abstract class AbstractEntityMaker extends AbstractMaker
      */
     abstract public function getFields(): Generator;
 
-    abstract public static function getEntityClass(): string;
+    abstract public static function getEntityClassName(): string;
 }

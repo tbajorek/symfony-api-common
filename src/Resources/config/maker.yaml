@@ -1,14 +1,23 @@
 services:
+  api_common.maker.entity_class_resolver:
+    class: \ApiCommon\Model\Maker\Entity\ClassNameResolver
+    arguments:
+      - '@api_common.model.configuration'
   api_common.maker.entity_class_generator:
     class: ApiCommon\Model\Maker\Entity\EntityClassGenerator
     parent: maker.entity_class_generator
+    arguments:
+      $configuration: '@api_common.model.configuration'
+  api_common.maker.user_entity_class_generator:
+    class: ApiCommon\Model\Maker\Entity\Generator\UserEntityClassGenerator
+    parent: api_common.maker.entity_class_generator
   api_common.maker.entity.abstract:
     abstract: true
     class: ApiCommon\Maker\Entity\AbstractEntityMaker
     arguments:
       - '@maker.file_manager'
-      - '@maker.doctrine_helper'
       - '@api_common.maker.entity_class_generator'
+      - '@api_common.maker.entity_class_resolver'
   api_common.maker.entity.config.value:
     class: ApiCommon\Maker\Entity\Config\ValueMaker
     parent: api_common.maker.entity.abstract
@@ -24,4 +33,10 @@ services:
       - '@api_common.maker.entity.config.value'
       - '@api_common.maker.entity.config.definition'
       - '@api_common.maker.entity.config.group'
+    tags: [ 'maker.command' ]
+  api_common.maker.entity.user:
+    class: ApiCommon\Maker\Entity\UserMaker
+    parent: api_common.maker.entity.abstract
+    arguments:
+      $entityClassGenerator: '@api_common.maker.user_entity_class_generator'
     tags: [ 'maker.command' ]

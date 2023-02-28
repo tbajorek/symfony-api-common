@@ -6,6 +6,8 @@ use ApiCommon\Model\DataObject;
 use Doctrine\DBAL\Types\Types;
 
 /**
+ * Objective representation of a property to have similar class like EntityRelation
+ *
  * @property bool $nullable
  * @property string $type
  * @property string $fieldName

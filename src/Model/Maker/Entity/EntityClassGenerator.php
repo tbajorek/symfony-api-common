@@ -2,6 +2,7 @@
 
 namespace ApiCommon\Model\Maker\Entity;
 
+use ApiCommon\Model\Configuration;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -21,6 +22,7 @@ class EntityClassGenerator
     public function __construct(
         private readonly Generator $generator,
         private readonly DoctrineHelper $doctrineHelper,
+        private readonly Configuration $configuration
     ) {
     }
 
@@ -36,7 +38,7 @@ class EntityClassGenerator
         array $uniqueConstraintFields = []
     ): string {
         $repoClassDetails = $this->generator->createClassNameDetails(
-            str_replace('App\\Entity\\', '', $entityClassDetails->getFullName()),
+            str_replace($this->configuration->getAppPrefix() . '\\Entity\\', '', $entityClassDetails->getFullName()),
             'Repository\\',
             'Repository'
         );
@@ -71,7 +73,7 @@ class EntityClassGenerator
 
         $entityPath = $this->generator->generateClass(
             $entityClassDetails->getFullName(),
-            $this->getTemplatePath('doctrine/Entity.tpl.php'),
+            $this->getTemplatePath($this->getEntityTemplate()),
             [
                 'use_statements' => $useStatements,
                 'repository_class_name' => $generateRepositoryClass ? $repoClassDetails->getShortName() : null,
@@ -86,8 +88,7 @@ class EntityClassGenerator
             $this->generateRepositoryClass(
                 $repoClassDetails->getFullName(),
                 $entityClassDetails->getFullName(),
-                $withPasswordUpgrade,
-                true
+                $withPasswordUpgrade
             );
         }
 
@@ -133,7 +134,7 @@ class EntityClassGenerator
 
         $this->generator->generateClass(
             $repositoryClass,
-            'doctrine/Repository.tpl.php',
+            $this->getTemplatePath($this->getRepositoryTemplate()),
             [
                 'use_statements' => $useStatements,
                 'entity_class_name' => $shortEntityClass,
@@ -145,8 +146,18 @@ class EntityClassGenerator
         );
     }
 
-    private function getTemplatePath(string $templateName): string
+    protected function getTemplatePath(string $templateName): string
     {
         return dirname(__DIR__, 3) . '/Resources/skeleton/' . $templateName;
+    }
+
+    protected function getEntityTemplate(): string
+    {
+        return 'doctrine/Entity.tpl.php';
+    }
+
+    protected function getRepositoryTemplate(): string
+    {
+        return 'doctrine/Repository.tpl.php';
     }
 }

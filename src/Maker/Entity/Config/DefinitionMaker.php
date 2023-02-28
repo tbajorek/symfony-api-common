@@ -29,8 +29,8 @@ class DefinitionMaker extends AbstractEntityMaker
 
         $groupRelation = new EntityRelation(
             EntityRelation::MANY_TO_ONE,
-            self::getEntityClass(),
-            ConfigGroupMaker::getEntityClass()
+            $this->classNameResolver->resolve(self::getEntityClassName()),
+            $this->classNameResolver->resolve(ConfigGroupMaker::getEntityClassName())
         );
         $groupRelation->setOwningProperty('configGroup');
         $groupRelation->setInverseProperty('definitions');
@@ -45,9 +45,9 @@ class DefinitionMaker extends AbstractEntityMaker
         yield new EntityField('metadata', Types::JSON, false, [], Metadata::class);
     }
 
-    public static function getEntityClass(): string
+    public static function getEntityClassName(): string
     {
-        return 'App\Entity\Config\Definition';
+        return 'Config\\Definition';
     }
 
     public static function getTableName(): ?string

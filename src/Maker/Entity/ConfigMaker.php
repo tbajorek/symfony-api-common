@@ -38,10 +38,6 @@ class ConfigMaker extends AbstractMaker
                 'Instead of adding new fields, simply generate the methods (e.g. getter/setter) for existing fields');
     }
 
-    public function configureDependencies(DependencyBuilder $dependencies)
-    {
-    }
-
     /**
      * @throws Exception
      */
@@ -52,12 +48,8 @@ class ConfigMaker extends AbstractMaker
         $this->configGroupMaker->generate($input, $io, $generator);
     }
 
-    public function __call(string $name, array $arguments)
-    {
-    }
-
     public static function getCommandDescription(): string
     {
-        return 'Creates application configuration entities';
+        return 'Create application configuration entities';
     }
 }

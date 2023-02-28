@@ -11,9 +11,9 @@ use ApiCommon\Model\Maker\Entity\EntityField;
 
 class ConfigGroupMaker extends AbstractEntityMaker
 {
-    public static function getEntityClass(): string
+    public static function getEntityClassName(): string
     {
-        return 'App\Entity\Config\ConfigGroup';
+        return 'Config\\ConfigGroup';
     }
 
     public static function getTableName(): ?string

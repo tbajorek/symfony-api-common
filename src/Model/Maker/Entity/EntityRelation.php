@@ -7,6 +7,9 @@ use Symfony\Bundle\MakerBundle\Doctrine\RelationOneToOne;
 use Symfony\Bundle\MakerBundle\Doctrine\RelationManyToOne;
 use Symfony\Bundle\MakerBundle\Doctrine\RelationOneToMany;
 
+/**
+ * Custom definition of native class from Symfony to allow use more relation attributes than in the original one.
+ */
 class EntityRelation
 {
     public const MANY_TO_ONE = 'ManyToOne';
