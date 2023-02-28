@@ -33,4 +33,8 @@ class <?= $class_name."\n" ?>
     {
         return $this->getId() ? $this->getId()->toRfc4122() : '';
     }
+
+    public function eraseCredentials()
+    {
+    }
 }

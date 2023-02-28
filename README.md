@@ -9,6 +9,8 @@ api_common:
 ```
 
 # API Entity Maker
+@TODO Add assert support for field definition
+
 This feature allows to generate concrete entities which are compatible with API Entity defined in this library. It's used to generate some entities already defined here, but it can be reused by you for your own entities.
 
 ## Add own entity maker command

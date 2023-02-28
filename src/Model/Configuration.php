@@ -10,6 +10,6 @@ class Configuration
 
     public function getAppPrefix(): string
     {
-        return trim($this->data['app_prefix'], '\\') ?? 'App';
+        return trim($this->data['app_prefix'] ?? 'App', '\\');
     }
 }

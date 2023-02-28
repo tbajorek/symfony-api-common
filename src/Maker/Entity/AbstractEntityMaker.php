@@ -179,7 +179,7 @@ abstract class AbstractEntityMaker extends AbstractMaker
             substr($entityClass, 0, strrpos($entityClass, '\\') + 1)
         );
 
-        $classExists = class_exists($entityClassDetails->getFullName());
+        $classExists = class_exists($entityClassDetails->getFullName(), false);
         if (!$classExists) {
             $entityPath = $this->entityClassGenerator->generateEntityClass(
                 $entityClassDetails,
@@ -194,10 +194,10 @@ abstract class AbstractEntityMaker extends AbstractMaker
                     $this->getDependencies())::getUniqueConstraintFields()
             );
             $generator->writeChanges();
-            require_once($entityPath);
         } else {
             $entityPath = $this->fileManager->getRelativePathForFutureClass($entityClass);
         }
+        require_once($entityPath);
         return $entityPath;
     }
 
