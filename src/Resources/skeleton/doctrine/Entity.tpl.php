@@ -18,14 +18,14 @@ namespace <?= $namespace ?>;
 <?php endif ?>
 class <?= $class_name."\n" ?>
 {
-#[ORM\Id]
-#[ORM\Column(type: 'uuid', unique: true)]
-#[ORM\GeneratedValue(strategy: 'CUSTOM')]
-#[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-private ?Uuid $id = null;
+    #[ORM\Id]
+    #[ORM\Column(type: 'uuid', unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    private ?Uuid $id = null;
 
-public function getId(): ?Uuid
-{
-return $this->id;
-}
+    public function getId(): ?Uuid
+    {
+        return $this->id;
+    }
 }

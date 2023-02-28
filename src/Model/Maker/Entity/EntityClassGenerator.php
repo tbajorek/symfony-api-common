@@ -49,6 +49,7 @@ class EntityClassGenerator
         $useStatements = new UseStatementGenerator([
             'Symfony\Component\Uid\Uuid',
             ['Doctrine\\ORM\\Mapping' => 'ORM'],
+            ['Symfony\\Component\\Validator\\Constraints' => 'Assert'],
         ]);
 
         if ($apiResource) {

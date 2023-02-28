@@ -18,13 +18,15 @@ class EntityField extends DataObject
         string $type = Types::STRING,
         bool $nullable = false,
         array $data = [],
-        ?string $propertyType = null
+        ?string $propertyType = null,
+        ?bool $blank = false
     ) {
         parent::__construct($data);
         $this->fieldName = $name;
         $this->type = $type;
         $this->nullable = $nullable;
         $this->propertyType = $propertyType;
+        $this->blank = $blank;
     }
 
     public function getName(): string
@@ -43,6 +45,11 @@ class EntityField extends DataObject
     }
 
     public function isNullable(): bool
+    {
+        return $this->nullable;
+    }
+
+    public function isBlank(): bool
     {
         return $this->nullable;
     }

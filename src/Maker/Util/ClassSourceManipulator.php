@@ -30,6 +30,8 @@ use Symfony\Bundle\MakerBundle\Doctrine\RelationOneToOne;
 use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Bundle\MakerBundle\Util\ClassNameValue;
 use Symfony\Bundle\MakerBundle\Util\PrettyPrinter;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Length;
 
 final class ClassSourceManipulator
 {
@@ -105,8 +107,20 @@ final class ClassSourceManipulator
         // 3) If default value, then NOT nullable
 
         $nullable = $columnOptions['nullable'] ?? false;
+        $blank = $columnOptions['blank'] ?? false;
+        unset($columnOptions['blank']);
         $isId = (bool) ($columnOptions['id'] ?? false);
         $attributes[] = $this->buildAttributeNode(Column::class, $columnOptions, 'ORM');
+        if ($typeHint === 'string') {
+            $attributes[] = $this->buildAttributeNode(
+                Length::class,
+                ['max' => $columnOptions['length']],
+                'Assert'
+            );
+            if (!$blank) {
+                $attributes[] = $this->buildAttributeNode(NotBlank::class, [], 'Assert');
+            }
+        }
 
         $defaultValue = null;
         if ('array' === $propertyType) {
