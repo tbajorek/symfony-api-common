@@ -6,7 +6,6 @@ use ApiCommon\Maker\Entity\Config\ConfigGroupMaker;
 use ApiCommon\Maker\Entity\Config\DefinitionMaker;
 use ApiCommon\Maker\Entity\Config\ValueMaker;
 use Exception;
-use Psr\Container\ContainerInterface;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
 use Symfony\Bundle\MakerBundle\DependencyBuilder;
 use Symfony\Bundle\MakerBundle\Generator;
@@ -51,5 +50,9 @@ class ConfigMaker extends AbstractMaker
     public static function getCommandDescription(): string
     {
         return 'Create application configuration entities';
+    }
+
+    public function configureDependencies(DependencyBuilder $dependencies)
+    {
     }
 }
