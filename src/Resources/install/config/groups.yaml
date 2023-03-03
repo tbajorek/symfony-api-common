@@ -1,0 +1,9 @@
+groups:
+  -
+    id: 1
+    label: Application
+    sortOrder: 1
+  -
+    id: 2
+    label: Layout
+    sortOrder: 2

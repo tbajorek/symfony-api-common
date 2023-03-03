@@ -1,0 +1,33 @@
+services:
+  api_common.installer.sorter.order:
+    class: ApiCommon\Model\Installer\Sorter\OrderSorter
+  api_common.installer.sorter.dependency:
+    class: ApiCommon\Model\Installer\Sorter\DependencySorter
+    arguments:
+      - '@api_common.installer.string_sort_factory'
+  api_common.installer.string_sort_factory:
+    class: ApiCommon\Model\Installer\Sorter\StringSortFactory
+  api_common.installer.sorter_factory:
+    class: ApiCommon\Model\Installer\Sorter\SorterFactory
+    arguments:
+      - '@api_common.model.configuration'
+      - '@service_container'
+  api_common.installer.sorter:
+    class: ApiCommon\Model\Installer\Sorter\SorterInterface
+    factory: ['@api_common.installer.sorter_factory', 'create']
+  api_common.installer.collection:
+    class: ApiCommon\Model\Installer\InstallersCollection
+    arguments:
+      - '@api_common.installer.sorter'
+  api_common.installer.loader.yaml:
+    class: ApiCommon\Model\Installer\Loader\YamlLoader
+    shared: false
+  api_common.installer.loader_provider:
+    class: ApiCommon\Model\Installer\Loader\LoaderProvider
+  api_common.installer.runner:
+    class: ApiCommon\Model\Installer\InstallerRunner
+  api_common.installer.command.run:
+    class: ApiCommon\Command\Installer\RunInstallersCommand
+    arguments:
+      - '@api_common.installer.runner'
+    tags: [ 'console.command' ]
