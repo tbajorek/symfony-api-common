@@ -15,3 +15,6 @@ services:
   api_common.install.config.value_installer:
     class: ApiCommon\Installer\Config\ValueInstaller
     tags: ['app.installer']
+  api_common.install.test_users:
+    class: ApiCommon\Installer\TestUserAccountInstaller
+    tags: ['app.installer']

@@ -7,37 +7,42 @@ use ApiCommon\Exception\Installer\WrongEntityException;
 use ApiCommon\Model\Configuration;
 use ApiCommon\Model\Installer\Entity\EntityHydrator;
 use ApiCommon\Model\Installer\Entity\HydratedValue;
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 trait EntityInstaller
 {
     private EntityHydrator $hydrator;
     private Configuration $configuration;
-    private ObjectManager $objectManager;
+    private EntityManagerInterface $entityManager;
 
     public function setDependencies(
         EntityHydrator $hydrator,
         Configuration $configuration,
-        ObjectManager $objectManager
+        EntityManagerInterface $entityManager
     ): void {
         $this->hydrator = $hydrator;
         $this->configuration = $configuration;
-        $this->objectManager = $objectManager;
+        $this->entityManager = $entityManager;
     }
 
     public function getEntityClass(): string
     {
-        return $this->configuration->getAppPrefix() . '\\Entity\\' . $this->getEntityName();
+        return $this->getEntityClassWithName();
+    }
+
+    public function hydrateEntity(array $data, ?string $entityName = null): HydratedValue
+    {
+        return $this->hydrator->hydrate($data, $this->getEntityClassWithName($entityName));
     }
 
     public function hydrate(array $data): HydratedValue
     {
-        return $this->hydrator->hydrate($data, $this->getEntityClass());
+        return $this->hydrateEntity($data);
     }
 
     public function persist(EntityInterface $entity): void
     {
-        $this->objectManager->persist($entity);
+        $this->entityManager->persist($entity);
     }
     
     public function flush(?array $entities = null): void
@@ -50,6 +55,11 @@ trait EntityInstaller
                 $this->persist($entity);
             }
         }
-        $this->objectManager->flush();
+        $this->entityManager->flush();
+    }
+
+    protected function getEntityClassWithName(?string $entityName = null): string
+    {
+        return $this->configuration->getAppPrefix() . '\\Entity\\' . ($entityName ?? $this->getEntityName());
     }
 }

@@ -30,12 +30,19 @@ class SharedEntityNormalizer extends ObjectNormalizer
 
     public function denormalize(mixed $data, string $type, string $format = null, array $context = [])
     {
-        $id = str_replace('@', '', $data);
+        $parts = explode('->', str_replace('@', '', $data));
+        $id = $parts[0];
+        $field = $parts[1] ?? null;
+        $object = $this->sharedDataRepository->get($id);
+        if ($field !== null) {
+            $getterMethod = 'get' . ucfirst($field);
+            return $object->$getterMethod();
+        }
         return $this->sharedDataRepository->get($id);
     }
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null)
     {
-        return is_string($data) && preg_match('/^\@[a-zA-Z0-9\_]+\:[a-zA-Z0-9\_]+$/i', $data) !== false;
+        return is_string($data) && preg_match('/^\@[a-zA-Z0-9\_]+\:[a-zA-Z0-9\_]+(\-\>[a-zA-Z0-9\_]+)$/i', $data) !== false;
     }
 }

@@ -41,6 +41,11 @@ services:
       - '@api_common.installer.shared_data_repository'
       - '@api_common.installer.shared_data_repository'
     tags: ['api_common.installer.operation']
+  api_common.installer.operation.user_data_installer:
+    class: ApiCommon\Model\Installer\Operations\UserDataInstallerOperation
+    arguments:
+      - '@security.user_password_hasher'
+    tags: ['api_common.installer.operation']
   api_common.installer.shared_entity_normalizer:
     class: ApiCommon\Model\Installer\Repository\SharedEntityNormalizer
     parent: 'serializer.normalizer.object'
@@ -61,6 +66,7 @@ services:
     class: ApiCommon\Model\Installer\InstallerRunner
     arguments:
       - '@api_common.installer.collection'
+      - '@doctrine.orm.default_entity_manager'
       - !tagged_iterator api_common.installer.operation
   api_common.installer.command.run:
     class: ApiCommon\Command\Installer\RunInstallersCommand

@@ -1,0 +1,23 @@
+user:
+  id: 1
+  email: 'user@example.coom'
+  password: 'User!23'
+  name: 'John'
+  surname: 'Smith'
+  roles:
+    - ROLE_USER
+admin:
+  id: 2
+  email: 'admin@example.coom'
+  password: 'Admin!23'
+  name: 'Michael'
+  surname: 'Petersen'
+  roles:
+    - ROLE_ADMIN
+config:
+  -
+    id: 100
+    definition: '@Config\Definition:1'
+    scope: '@Config\Scope:2'
+    scopeId: '@User:1->id'
+    value: 'pl'

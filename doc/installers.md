@@ -258,6 +258,15 @@ Example references:
 
 Internal library class `\ApiCommon\Model\Installer\Repository\SharedEntityNormalizer` is responsible to interpret these references and take correct shared object.
 
+#### Access to shared object properties
+For some advanced cases you may need to not assign to a field other entity related to current one but just a value from its property.
+You can do it by having a value in install data which follows this pattern: **@**_ENTITY_NAME_**:**_ENTITY_ID_**->**_FIELD_NAME_ where:
+* `ENTITY_NAME` is entity name without `App\Entity` prefix (same like returned by `getEntityName` method);
+* `ENTITY_ID` is identifier of related entity in its data file (not the one generated while saving in database);
+* `FIELD_NAME` is a name of field in shared entity; the field must have standard getter method starting from `get`.
+
+Example value: `@User:1->id`.
+
 ### Share data between installers
 Most needed data to be shared between installers are entities. However, you may want to share other data. You can use for it the same repository which is used internally to share entities. It means that all shared entities will be available there too.
 

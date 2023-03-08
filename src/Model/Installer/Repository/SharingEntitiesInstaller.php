@@ -13,10 +13,10 @@ trait SharingEntitiesInstaller
         $this->repository = $repository;
     }
 
-    public function shareEntity(string|int $id, EntityInterface $entity): void
+    public function shareEntity(string|int $id, EntityInterface $entity, ?string $entityName = null): void
     {
         $this->repository->add(
-            $this->repository->getEntityIdentifier($this->getEntityName(), (string)$id),
+            $this->repository->getEntityIdentifier($entityName ?? $this->getEntityName(), (string)$id),
             $entity
         );
     }

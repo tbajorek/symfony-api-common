@@ -12,7 +12,7 @@ interface SharingEntitiesInstallerInterface extends EntityInstallerInterface
 
     public function setSharedDataRepository(SharedDataRepository $repository): void;
 
-    public function shareEntity(string $id, EntityInterface $entity): void;
+    public function shareEntity(string|int $id, EntityInterface $entity, ?string $entityName = null): void;
 
     public function getSharedEntity(string $entityName, string $id): EntityInterface;
 }

@@ -4,17 +4,17 @@ namespace ApiCommon\Model\Installer\Entity;
 
 use ApiCommon\Entity\EntityInterface;
 use ApiCommon\Model\Configuration;
-use ApiCommon\Model\Installer\Entity\EntityHydrator;
-use ApiCommon\Model\Installer\Entity\HydratedValue;
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 interface EntityInstallerInterface
 {
     public function setDependencies(
         EntityHydrator $hydrator,
         Configuration $configuration,
-        ObjectManager $objectManager
+        EntityManagerInterface $entityManager
     ): void;
+
+    public function hydrateEntity(array $data, ?string $entityName = null): HydratedValue;
 
     public function hydrate(array $data): HydratedValue;
 

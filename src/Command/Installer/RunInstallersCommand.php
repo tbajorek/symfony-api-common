@@ -11,7 +11,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class RunInstallersCommand extends Command
 {
-    public const COMMAND_NAME = 'app:installers:run';
+    public const COMMAND_NAME = 'app:install';
 
     public function __construct(private readonly InstallerRunner $installerRunner, string $name = null)
     {
