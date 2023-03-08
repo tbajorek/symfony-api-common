@@ -1,0 +1,8 @@
+entityName: 'Config\Value'
+data:
+  -
+    id: 1
+    definition: '@Config\Definition:1'
+    scope: '@Config\Scope:1'
+    scopeId: null
+    value: 'en'

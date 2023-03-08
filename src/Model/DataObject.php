@@ -2,7 +2,9 @@
 
 namespace ApiCommon\Model;
 
-class DataObject
+use JsonSerializable;
+
+class DataObject implements JsonSerializable
 {
     public function __construct(private array $data = [])
     {
@@ -24,6 +26,11 @@ class DataObject
     }
 
     public function getAllData(): array
+    {
+        return $this->data;
+    }
+
+    public function jsonSerialize(): mixed
     {
         return $this->data;
     }

@@ -3,3 +3,15 @@ services:
     class: ApiCommon\Model\Configuration
     arguments:
       - '%api_common.config.data%'
+  api_common.install.config.scope_installer:
+    class: ApiCommon\Installer\Config\ScopeInstaller
+    tags: ['app.installer']
+  api_common.install.config.group_installer:
+    class: ApiCommon\Installer\Config\ConfigGroupInstaller
+    tags: ['app.installer']
+  api_common.install.config.definition_installer:
+    class: ApiCommon\Installer\Config\DefinitionInstaller
+    tags: ['app.installer']
+  api_common.install.config.value_installer:
+    class: ApiCommon\Installer\Config\ValueInstaller
+    tags: ['app.installer']

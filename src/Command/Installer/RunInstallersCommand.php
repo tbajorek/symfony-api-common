@@ -29,7 +29,8 @@ class RunInstallersCommand extends Command
     {
         $ui = new SymfonyStyle($input, $output);
         try {
-            $this->installerRunner->install();
+            $executed = $this->installerRunner->install($ui);
+            $ui->success(sprintf('%d installers were executed', $executed));
             return Command::SUCCESS;
         } catch (Exception $exception) {
             $ui->error($exception->getMessage());

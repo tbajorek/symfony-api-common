@@ -14,6 +14,11 @@ use ApiCommon\Model\Maker\Entity\EntityRelation;
 
 class DefinitionMaker extends AbstractEntityMaker
 {
+    public static function getCommandDescription(): string
+    {
+        return 'Create configuration definition entity';
+    }
+
     public function getInterfaces(): array
     {
         return [
@@ -23,7 +28,7 @@ class DefinitionMaker extends AbstractEntityMaker
 
     public function getFields(): Generator
     {
-        yield new EntityField('path', Types::STRING, false, ['length' => 255]);
+        yield new EntityField('path', Types::STRING, false, ['length' => 255, 'unique' => true]);
         yield new EntityField('label', Types::STRING, false, ['length' => 255]);
         yield new EntityField('sortOrder', Types::INTEGER);
 
@@ -55,16 +60,10 @@ class DefinitionMaker extends AbstractEntityMaker
         return 'config_definitions';
     }
 
-    public static function getUniqueConstraintFields(): array
-    {
-        return [
-            'path'
-        ];
-    }
-
     public function getDependencies(): array
     {
         return [
+            ScopeMaker::class,
             ValueMaker::class,
             ConfigGroupMaker::class
         ];

@@ -2,16 +2,22 @@
 
 namespace ApiCommon\Maker\Entity\Config;
 
+use ApiCommon\Entity\Config\DefinitionInterface;
+use ApiCommon\Entity\Config\ScopeInterface;
 use ApiCommon\Entity\Config\ValueInterface;
 use ApiCommon\Maker\Entity\AbstractEntityMaker;
 use ApiCommon\Model\Maker\Entity\EntityField;
+use ApiCommon\Model\Maker\Entity\EntityRelation;
 use Doctrine\DBAL\Types\Types;
 use Generator;
-use ApiCommon\Model\Maker\Entity\EntityRelation;
-use ApiCommon\Entity\Config\DefinitionInterface;
 
 class ValueMaker extends AbstractEntityMaker
 {
+    public static function getCommandDescription(): string
+    {
+        return 'Create configuration value entity';
+    }
+
     public function getInterfaces(): array
     {
         return [
@@ -25,7 +31,7 @@ class ValueMaker extends AbstractEntityMaker
      */
     public function getFields(): Generator
     {
-        $definitionRelation = new \ApiCommon\Model\Maker\Entity\EntityRelation(
+        $definitionRelation = new EntityRelation(
             EntityRelation::MANY_TO_ONE,
             $this->classNameResolver->resolve(self::getEntityClassName()),
             $this->classNameResolver->resolve(DefinitionMaker::getEntityClassName())
@@ -38,7 +44,18 @@ class ValueMaker extends AbstractEntityMaker
         $definitionRelation->setCustomInverseReturnType(ValueInterface::class);
         yield $definitionRelation;
 
-        yield new EntityField('scope', Types::STRING, false, ['length' => 255]);
+        $scopeRelation = new EntityRelation(
+            EntityRelation::MANY_TO_ONE,
+            $this->classNameResolver->resolve(self::getEntityClassName()),
+            $this->classNameResolver->resolve(ScopeMaker::getEntityClassName())
+        );
+        $scopeRelation->setOwningProperty('scope');
+        $scopeRelation->setColumnName('scope');
+        $scopeRelation->setMapInverseRelation(false);
+        $scopeRelation->setIsNullable(false);
+        $scopeRelation->setCustomReturnType(ScopeInterface::class);
+        yield $scopeRelation;
+
         yield new EntityField('scopeId', 'uuid', true, ['unique' => false]);
         yield new EntityField('value', Types::STRING, false, ['length' => 255]);
         yield new EntityField('updatedAt', Types::DATETIME_MUTABLE, false, ['length' => 255]);
@@ -47,8 +64,9 @@ class ValueMaker extends AbstractEntityMaker
     public function getDependencies(): array
     {
         return [
+            ScopeMaker::class,
+            ConfigGroupMaker::class,
             DefinitionMaker::class,
-            ConfigGroupMaker::class
         ];
     }
 
@@ -60,5 +78,13 @@ class ValueMaker extends AbstractEntityMaker
     public static function getTableName(): ?string
     {
         return 'config_values';
+    }
+
+    public static function getUniqueConstraintFields(): array
+    {
+        return [
+            'scope',
+            'scope_id',
+        ];
     }
 }

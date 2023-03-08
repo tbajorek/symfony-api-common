@@ -11,6 +11,11 @@ use ApiCommon\Model\Maker\Entity\EntityField;
 
 class ConfigGroupMaker extends AbstractEntityMaker
 {
+    public static function getCommandDescription(): string
+    {
+        return 'Create configuration group entity';
+    }
+
     public static function getEntityClassName(): string
     {
         return 'Config\\ConfigGroup';
@@ -30,13 +35,14 @@ class ConfigGroupMaker extends AbstractEntityMaker
 
     public function getFields(): Generator
     {
-        yield new EntityField('label', Types::STRING, false, ['length' => 255]);
+        yield new EntityField('label', Types::STRING, false, ['length' => 255, 'unique' => true]);
         yield new EntityField('sortOrder', Types::INTEGER);
     }
 
     public function getDependencies(): array
     {
         return [
+            ScopeMaker::class,
             ValueMaker::class,
             DefinitionMaker::class
         ];

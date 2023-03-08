@@ -4,6 +4,7 @@ namespace ApiCommon\Maker\Entity;
 
 use ApiCommon\Entity\EntityInterface;
 use ApiCommon\Maker\Util\ClassSourceManipulator;
+use ApiCommon\Model\DependencyResolver\DependentClassInterface;
 use ApiCommon\Model\Maker\Entity\ClassNameResolver;
 use ApiCommon\Model\Maker\Entity\DependencyManager;
 use ApiCommon\Model\Maker\Entity\EntityClassGenerator;
@@ -21,7 +22,7 @@ use Symfony\Bundle\MakerBundle\Util\ClassNameDetails;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 
-abstract class AbstractEntityMaker extends AbstractMaker
+abstract class AbstractEntityMaker extends AbstractMaker implements DependentClassInterface
 {
     private readonly DependencyManager $dependencyManager;
 
@@ -162,6 +163,10 @@ abstract class AbstractEntityMaker extends AbstractMaker
         }
 
         $this->writeSuccessMessage($io);
+        $io->text([
+            'Next: When you\'re ready, create a migration with <info>php bin/console make:migration</info>',
+            '',
+        ]);
     }
 
     private function getEntityClassDetails(string $entityClass): ClassNameDetails
@@ -179,7 +184,8 @@ abstract class AbstractEntityMaker extends AbstractMaker
             substr($entityClass, 0, strrpos($entityClass, '\\') + 1)
         );
 
-        $classExists = class_exists($entityClassDetails->getFullName(), false);
+        $entityPath = $this->fileManager->getRelativePathForFutureClass($entityClass);
+        $classExists = class_exists($entityClassDetails->getFullName(), file_exists($entityPath));
         if (!$classExists) {
             $entityPath = $this->entityClassGenerator->generateEntityClass(
                 $entityClassDetails,
@@ -194,10 +200,8 @@ abstract class AbstractEntityMaker extends AbstractMaker
                     $this->getDependencies())::getUniqueConstraintFields()
             );
             $generator->writeChanges();
-        } else {
-            $entityPath = $this->fileManager->getRelativePathForFutureClass($entityClass);
+            require_once($entityPath);
         }
-        require_once($entityPath);
         return $entityPath;
     }
 

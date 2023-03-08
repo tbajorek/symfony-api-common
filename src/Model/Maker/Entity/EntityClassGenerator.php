@@ -68,7 +68,6 @@ class EntityClassGenerator
         $uniqueFields = '';
         if ($uniqueConstraintFields) {
             $uniqueFields = implode('\', \'', $uniqueConstraintFields);
-            $useStatements->addUseStatement('Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity');
         }
 
         $entityPath = $this->generator->generateClass(

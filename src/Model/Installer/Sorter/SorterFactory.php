@@ -4,6 +4,7 @@ namespace ApiCommon\Model\Installer\Sorter;
 
 use ApiCommon\Model\Configuration;
 use Psr\Container\ContainerInterface;
+use ApiCommon\Model\DependencyResolver\SorterInterface;
 
 class SorterFactory
 {
@@ -19,7 +20,7 @@ class SorterFactory
                 break;
             case Configuration::INSTALLER_SORT_MODE_DEPENDENCIES:
             default:
-                $serviceId = 'api_common.installer.sorter.dependency';
+                $serviceId = 'api_common.dependency_resolver.sorter.dependency';
                 break;
         }
         return $this->container->get($serviceId);

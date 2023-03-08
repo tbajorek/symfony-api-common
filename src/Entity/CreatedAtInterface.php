@@ -2,11 +2,11 @@
 
 namespace ApiCommon\Entity;
 
-use DateTime;
+use DateTimeInterface;
 
 interface CreatedAtInterface
 {
-    public function getCreatedAt(): DateTime;
+    public function getCreatedAt(): ?DateTimeInterface;
 
-    public function setCreatedAt(DateTime $createdAt): self;
+    public function setCreatedAt(DateTimeInterface $createdAt): self;
 }

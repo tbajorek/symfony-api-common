@@ -24,7 +24,7 @@ use Symfony\Bundle\MakerBundle\Doctrine\BaseCollectionRelation;
 use Symfony\Bundle\MakerBundle\Doctrine\BaseRelation;
 use Symfony\Bundle\MakerBundle\Doctrine\DoctrineHelper;
 use Symfony\Bundle\MakerBundle\Doctrine\RelationManyToMany;
-use Symfony\Bundle\MakerBundle\Doctrine\RelationManyToOne;
+use ApiCommon\Model\Maker\Entity\Relation\RelationManyToOne;
 use Symfony\Bundle\MakerBundle\Doctrine\RelationOneToMany;
 use Symfony\Bundle\MakerBundle\Doctrine\RelationOneToOne;
 use Symfony\Bundle\MakerBundle\Str;
@@ -82,7 +82,22 @@ final class ClassSourceManipulator
     public function addEntityField(string $propertyName, array $columnOptions, array $comments = []): void
     {
         $typeHint = DoctrineHelper::getPropertyTypeForColumn($columnOptions['type']);
-        if ($typeHint && DoctrineHelper::canColumnTypeBeInferredByPropertyType($columnOptions['type'], $typeHint)) {
+
+        $propertyType = $typeHint;
+        if (array_key_exists('propertyType', $columnOptions)) {
+            if ($columnOptions['propertyType']) {
+                $propertyType = $columnOptions['propertyType'];
+            }
+            unset($columnOptions['propertyType']);
+        }
+        if ($this->checkTypeIsClass($propertyType)) {
+            $propertyType = $this->addUseStatementIfNecessary(ltrim($propertyType, '\\'));
+        }
+
+        if (
+            $typeHint && $propertyType === $typeHint &&
+            DoctrineHelper::canColumnTypeBeInferredByPropertyType($columnOptions['type'], $typeHint)
+        ) {
             unset($columnOptions['type']);
         }
 
@@ -92,15 +107,6 @@ final class ClassSourceManipulator
                 $this->addUseStatementIfNecessary(Types::class);
                 $columnOptions['type'] = $typeConstant;
             }
-        }
-
-        $propertyType = $typeHint;
-        if (array_key_exists('propertyType', $columnOptions)) {
-            if ($columnOptions['propertyType']) {
-                $propertyType = $this->checkTypeIsClass($columnOptions['propertyType'])
-                    ? $this->addUseStatementIfNecessary($columnOptions['propertyType']) : $columnOptions['propertyType'];
-            }
-            unset($columnOptions['propertyType']);
         }
 
         // 2) USE property type on property below, nullable
@@ -217,9 +223,16 @@ final class ClassSourceManipulator
 
     public function addInterface(string $interfaceName): void
     {
-        $this->addUseStatementIfNecessary($interfaceName);
+        $importedClassName = $this->addUseStatementIfNecessary($interfaceName);
 
-        $this->getClassNode()->implements[] = new Node\Name(Str::getShortClassName($interfaceName));
+        $interfaceNodes = $this->getClassNode()->implements;
+        foreach ($interfaceNodes as $node) {
+            if ($node->toString() === $importedClassName) {
+                return;
+            }
+        }
+
+        $this->getClassNode()->implements[] = new Node\Name($importedClassName);
         $this->updateSourceCodeFromNewStmts();
     }
 
@@ -475,6 +488,8 @@ final class ClassSourceManipulator
         if ('self' === $typeHint) {
             // Doctrine does not currently resolve "self" correctly for targetEntity guessing
             $annotationOptions['targetEntity'] = new ClassNameValue($typeHint, $relation->getTargetClassName());
+        } elseif ($typeHint !== $phpType) {
+            $annotationOptions['targetEntity'] = new ClassNameValue($typeHint, $relation->getTargetClassName());
         }
 
         if ($relation instanceof RelationOneToOne) {
@@ -489,8 +504,13 @@ final class ClassSourceManipulator
             ),
         ];
 
-        if (!$relation->isNullable() && $relation->isOwning()) {
-            $attributes[] = $this->buildAttributeNode(JoinColumn::class, ['nullable' => false], 'ORM');
+        if ($relation->isOwning()) {
+            $columnAttributes = [];
+            if ($relation instanceof RelationManyToOne && $relation->getColumnName()) {
+                $columnAttributes['name'] = $relation->getColumnName();
+            }
+            $columnAttributes['nullable'] = !$relation->isNullable();
+            $attributes[] = $this->buildAttributeNode(JoinColumn::class, $columnAttributes, 'ORM');
         }
 
         $this->addProperty(

@@ -4,6 +4,7 @@ namespace ApiCommon\Maker\Entity;
 
 use ApiCommon\Maker\Entity\Config\ConfigGroupMaker;
 use ApiCommon\Maker\Entity\Config\DefinitionMaker;
+use ApiCommon\Maker\Entity\Config\ScopeMaker;
 use ApiCommon\Maker\Entity\Config\ValueMaker;
 use Exception;
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
@@ -18,6 +19,7 @@ use Symfony\Component\Console\Input\InputOption;
 class ConfigMaker extends AbstractMaker
 {
     public function __construct(
+        private readonly ScopeMaker $scopeMaker,
         private readonly ValueMaker $valueMaker,
         private readonly DefinitionMaker $definitionMaker,
         private readonly ConfigGroupMaker $configGroupMaker
@@ -42,6 +44,7 @@ class ConfigMaker extends AbstractMaker
      */
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator)
     {
+        $this->scopeMaker->generate($input, $io, $generator);
         $this->valueMaker->generate($input, $io, $generator);
         $this->definitionMaker->generate($input, $io, $generator);
         $this->configGroupMaker->generate($input, $io, $generator);

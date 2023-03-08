@@ -1,0 +1,5 @@
+services:
+  api_common.entities.event_subscriber_updated_at:
+    class: ApiCommon\Doctrine\EventListener\UpdatedAtSubscriber
+    tags:
+      - { name: 'doctrine.event_subscriber', event: preUpdate }

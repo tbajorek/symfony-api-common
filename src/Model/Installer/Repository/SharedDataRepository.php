@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace ApiCommon\Model\Installer;
+namespace ApiCommon\Model\Installer\Repository;
 
 use ApiCommon\Exception\Installer\SharedValueNotSetException;
 
@@ -19,5 +19,10 @@ class SharedDataRepository
             return $this->sharedData[$id];
         }
         throw new SharedValueNotSetException(sprintf('No shared value with identifier = %s', $id));
+    }
+
+    public function getEntityIdentifier(string $entityName, string $id): string
+    {
+        return $entityName . ':' . $id;
     }
 }

@@ -14,7 +14,7 @@ namespace <?= $namespace ?>;
 #[ApiResource]
 <?php endif ?>
 <?php if ($unique_constraint_fields): ?>
-#[UniqueEntity(['<?= $unique_constraint_fields ?>'])]
+#[ORM\UniqueConstraint(name: 'unique_fields_index', columns: ['<?= $unique_constraint_fields ?>'])]
 <?php endif ?>
 class <?= $class_name."\n" ?>
 {

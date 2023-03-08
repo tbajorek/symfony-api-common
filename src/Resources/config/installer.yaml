@@ -1,12 +1,7 @@
 services:
   api_common.installer.sorter.order:
     class: ApiCommon\Model\Installer\Sorter\OrderSorter
-  api_common.installer.sorter.dependency:
-    class: ApiCommon\Model\Installer\Sorter\DependencySorter
-    arguments:
-      - '@api_common.installer.string_sort_factory'
-  api_common.installer.string_sort_factory:
-    class: ApiCommon\Model\Installer\Sorter\StringSortFactory
+    public: true
   api_common.installer.sorter_factory:
     class: ApiCommon\Model\Installer\Sorter\SorterFactory
     arguments:
@@ -22,10 +17,51 @@ services:
   api_common.installer.loader.yaml:
     class: ApiCommon\Model\Installer\Loader\YamlLoader
     shared: false
+    tags: ['app.installer.loader']
+  api_common.installer.loader.csv:
+    class: ApiCommon\Model\Installer\Loader\CsvLoader
+    shared: false
+    tags: ['app.installer.loader']
   api_common.installer.loader_provider:
     class: ApiCommon\Model\Installer\Loader\LoaderProvider
+  api_common.installer.operation.loader_aware_installer:
+    class: ApiCommon\Model\Installer\Operations\LoaderAwareInstallerOperation
+    arguments:
+      - '@api_common.installer.loader_provider'
+    tags: ['api_common.installer.operation']
+  api_common.installer.entity_hydrator:
+    class: ApiCommon\Model\Installer\Entity\EntityHydrator
+    arguments:
+      $normalizers:
+        - '@api_common.installer.shared_entity_normalizer'
+        - '@serializer.normalizer.object'
+  api_common.installer.operation.sharing_entities_installer:
+    class: ApiCommon\Model\Installer\Operations\SharingEntitiesInstallerOperation
+    arguments:
+      - '@api_common.installer.shared_data_repository'
+      - '@api_common.installer.shared_data_repository'
+    tags: ['api_common.installer.operation']
+  api_common.installer.shared_entity_normalizer:
+    class: ApiCommon\Model\Installer\Repository\SharedEntityNormalizer
+    parent: 'serializer.normalizer.object'
+    arguments:
+      $sharedDataRepository: '@api_common.installer.shared_data_repository'
+  api_common.installer.operation.entity_installer:
+    class: ApiCommon\Model\Installer\Operations\EntityInstallerOperation
+    arguments:
+      - '@api_common.installer.entity_hydrator'
+      - '@api_common.model.configuration'
+      - '@doctrine.orm.default_entity_manager'
+    tags: ['api_common.installer.operation']
+  api_common.installer.shared_data_repository:
+    class: ApiCommon\Model\Installer\Repository\SharedDataRepository
+  api_common.installer.abstract_yaml_entity_installer:
+    class: ApiCommon\Model\Installer\YamlEntityInstaller
   api_common.installer.runner:
     class: ApiCommon\Model\Installer\InstallerRunner
+    arguments:
+      - '@api_common.installer.collection'
+      - !tagged_iterator api_common.installer.operation
   api_common.installer.command.run:
     class: ApiCommon\Command\Installer\RunInstallersCommand
     arguments:

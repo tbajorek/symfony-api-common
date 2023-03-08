@@ -33,7 +33,7 @@ class CsvLoader implements LoaderInterface, DataLocationLoader
         }
     }
 
-    public function getType(): string
+    public static function getType(): string
     {
         return 'csv';
     }

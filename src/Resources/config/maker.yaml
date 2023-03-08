@@ -18,6 +18,9 @@ services:
       - '@maker.file_manager'
       - '@api_common.maker.entity_class_generator'
       - '@api_common.maker.entity_class_resolver'
+  api_common.maker.entity.config.scope:
+    class: ApiCommon\Maker\Entity\Config\ScopeMaker
+    parent: api_common.maker.entity.abstract
   api_common.maker.entity.config.value:
     class: ApiCommon\Maker\Entity\Config\ValueMaker
     parent: api_common.maker.entity.abstract
@@ -30,6 +33,7 @@ services:
   api_common.maker.entity.config:
     class: ApiCommon\Maker\Entity\ConfigMaker
     arguments:
+      - '@api_common.maker.entity.config.scope'
       - '@api_common.maker.entity.config.value'
       - '@api_common.maker.entity.config.definition'
       - '@api_common.maker.entity.config.group'

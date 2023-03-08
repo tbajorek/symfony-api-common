@@ -4,7 +4,7 @@ namespace ApiCommon\Model\Maker\Entity;
 
 use Symfony\Bundle\MakerBundle\Doctrine\RelationManyToMany;
 use Symfony\Bundle\MakerBundle\Doctrine\RelationOneToOne;
-use Symfony\Bundle\MakerBundle\Doctrine\RelationManyToOne;
+use ApiCommon\Model\Maker\Entity\Relation\RelationManyToOne;
 use Symfony\Bundle\MakerBundle\Doctrine\RelationOneToMany;
 
 /**
@@ -19,10 +19,12 @@ class EntityRelation
 
     private $owningProperty;
     private $inverseProperty;
+    private ?string $columnName = null;
     private bool $isNullable = false;
     private bool $isSelfReferencing = false;
     private bool $orphanRemoval = false;
     private bool $mapInverseRelation = true;
+    private ?bool $isCustomReturnTypeNullable = true;
     private ?string $customReturnType = null;
     private ?string $customInverseReturnType = null;
 
@@ -47,6 +49,11 @@ class EntityRelation
         $this->owningProperty = $owningProperty;
     }
 
+    public function setColumnName(string $columnName): void
+    {
+        $this->columnName = $columnName;
+    }
+
     public function setInverseProperty(string $inverseProperty): void
     {
         if (!$this->mapInverseRelation) {
@@ -59,6 +66,11 @@ class EntityRelation
     public function setIsNullable(bool $isNullable): void
     {
         $this->isNullable = $isNullable;
+    }
+
+    public function setIsCustomReturnTypeNullable(bool $isCustomReturnTypeNullable): void
+    {
+        $this->isCustomReturnTypeNullable = $isCustomReturnTypeNullable;
     }
 
     public function setOrphanRemoval(bool $orphanRemoval): void
@@ -96,8 +108,10 @@ class EntityRelation
                 isSelfReferencing: $this->isSelfReferencing,
                 mapInverseRelation: $this->mapInverseRelation,
                 customReturnType: $this->customReturnType,
+                isCustomReturnTypeNullable: $this->isCustomReturnTypeNullable,
                 isOwning: true,
                 isNullable: $this->isNullable,
+                columnName: $this->columnName,
             )),
             self::MANY_TO_MANY => (new RelationManyToMany(
                 propertyName: $this->owningProperty,
@@ -106,6 +120,7 @@ class EntityRelation
                 isSelfReferencing: $this->isSelfReferencing,
                 mapInverseRelation: $this->mapInverseRelation,
                 customReturnType: $this->customReturnType,
+                isCustomReturnTypeNullable: $this->isCustomReturnTypeNullable,
                 isOwning: true,
             )),
             self::ONE_TO_ONE => (new RelationOneToOne(
@@ -131,14 +146,16 @@ class EntityRelation
                 targetPropertyName: $this->owningProperty,
                 isSelfReferencing: $this->isSelfReferencing,
                 orphanRemoval: $this->orphanRemoval,
-                customReturnType: $this->customInverseReturnType
+                customReturnType: $this->customInverseReturnType,
+                isCustomReturnTypeNullable: $this->isCustomReturnTypeNullable
             )),
             self::MANY_TO_MANY => (new RelationManyToMany(
                 propertyName: $this->inverseProperty,
                 targetClassName: $this->owningClass,
                 targetPropertyName: $this->owningProperty,
                 isSelfReferencing: $this->isSelfReferencing,
-                customReturnType: $this->customInverseReturnType
+                customReturnType: $this->customInverseReturnType,
+                isCustomReturnTypeNullable: $this->isCustomReturnTypeNullable,
             )),
             self::ONE_TO_ONE => (new RelationOneToOne(
                 propertyName: $this->inverseProperty,

@@ -33,6 +33,11 @@ trait DataLocator
                 sprintf('Install data directory for installer %s can not be deducted', $this->installer::class)
             );
         }
-        return $pathParts[0] . '/Resources/install/';
+        return implode(DIRECTORY_SEPARATOR, [
+            $pathParts[0],
+            'Resources',
+            'install',
+            trim($filename, DIRECTORY_SEPARATOR)
+        ]);
     }
 }

@@ -3,18 +3,23 @@
 namespace ApiCommon\Installer\Config;
 
 use ApiCommon\Model\Installer\DependentInstallerInterface;
+use ApiCommon\Model\Installer\Entity\EntityInstallerInterface;
+use ApiCommon\Model\Installer\InstallerInterface;
+use ApiCommon\Model\Installer\LoaderAwareInstaller;
+use ApiCommon\Model\Installer\Repository\SharingEntitiesInstallerInterface;
+use ApiCommon\Model\Installer\YamlEntityInstaller;
 
-class ValueInstaller implements DependentInstallerInterface
+class ValueInstaller extends YamlEntityInstaller implements InstallerInterface, LoaderAwareInstaller, EntityInstallerInterface, SharingEntitiesInstallerInterface, DependentInstallerInterface
 {
-    public function install(): void
+    protected function getDataFilePath(): string
     {
-        echo self::class . PHP_EOL;
+        return 'config/values.yaml';
     }
 
     public function getDependencies(): array
     {
         return [
-            ConfigGroupInstaller::class,
+            ScopeInstaller::class,
             DefinitionInstaller::class,
         ];
     }

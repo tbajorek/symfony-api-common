@@ -14,5 +14,5 @@ interface LoaderInterface
 
     public function setInstaller(InstallerInterface $installer): void;
 
-    public function getType(): string;
+    public static function getType(): string;
 }

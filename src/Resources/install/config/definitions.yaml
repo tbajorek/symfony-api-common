@@ -1,0 +1,15 @@
+entityName: 'Config\Definition'
+data:
+  -
+    id: 1
+    configGroup: '@Config\ConfigGroup:1'
+    path: 'application/general/default_language'
+    label: 'Default language'
+    sortOrder: 1
+    frontendModel: '\ApiCommon\Model\Config\FrontendModel\SelectModel'
+    backendModel: '\ApiCommon\Model\Config\BackendModel\DatabaseValue'
+    metadata:
+      data:
+        options:
+          en: English
+          pl: Polski

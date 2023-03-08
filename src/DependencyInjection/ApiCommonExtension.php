@@ -28,20 +28,11 @@ final class ApiCommonExtension extends Extension
         );
         $loader->load('services.yaml');
 
+        $loader->load('dependency_resolver.yaml');
+        $loader->load('entities.yaml');
         $loader->load('maker.yaml');
         $loader->load('installer.yaml');
 
-        $container->registerForAutoconfiguration(InstallerInterface::class)
-            ->addTag(InstallersCompilePass::INSTALLER_TAG);
-
-        $container->registerForAutoconfiguration(LoaderInterface::class)
-            ->addTag(InstallerLoadersCompilePass::INSTALLER_LOADER_TAG);
-
         $container->setParameter('api_common.config.data', $config);
-    }
-
-    protected function build(ContainerBuilder $containerBuilder): void
-    {
-        $containerBuilder->addCompilerPass(new InstallersCompilePass());
     }
 }

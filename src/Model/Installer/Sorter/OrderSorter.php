@@ -2,15 +2,18 @@
 
 namespace ApiCommon\Model\Installer\Sorter;
 
+use ApiCommon\Model\Installer\DependentInstallerInterface;
 use ApiCommon\Model\Installer\InstallerInterface;
 use ApiCommon\Model\Installer\OrderedInstallerInterface;
+use ApiCommon\Model\DependencyResolver\SorterInterface;
 
 class OrderSorter implements SorterInterface
 {
     /**
-     * @inheritdoc
+     * @param DependentInstallerInterface[] $objects
+     * @return DependentInstallerInterface[]
      */
-    public function sort(array $installers): array
+    public function sort(array $objects): array
     {
         usort($installers, static function (InstallerInterface $a, InstallerInterface $b): int {
             if ($a instanceof OrderedInstallerInterface && $b instanceof OrderedInstallerInterface) {

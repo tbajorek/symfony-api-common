@@ -2,23 +2,16 @@
 
 namespace ApiCommon\Installer\Config;
 
+use ApiCommon\Model\Installer\Entity\EntityInstallerInterface;
 use ApiCommon\Model\Installer\InstallerInterface;
-use ApiCommon\Model\Installer\LoadingDataInstaller;
 use ApiCommon\Model\Installer\LoaderAwareInstaller;
+use ApiCommon\Model\Installer\Repository\SharingEntitiesInstallerInterface;
+use ApiCommon\Model\Installer\YamlEntityInstaller;
 
-class ConfigGroupInstaller implements InstallerInterface, LoaderAwareInstaller
+class ConfigGroupInstaller extends YamlEntityInstaller implements InstallerInterface, LoaderAwareInstaller, EntityInstallerInterface, SharingEntitiesInstallerInterface
 {
-    use LoadingDataInstaller;
-
-    public function getLoaderType(): string
+    protected function getDataFilePath(): string
     {
-        return 'yaml';
-    }
-
-    public function install(): void
-    {
-        $groupsData = $this->getLoader()->load('config/groups.yaml');
-        var_dump($groupsData);
-        echo self::class . PHP_EOL;
+        return 'config/groups.yaml';
     }
 }

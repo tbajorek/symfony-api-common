@@ -4,7 +4,7 @@ namespace ApiCommon\Exception\Installer;
 
 use LogicException;
 
-class CircularReferenceException extends LogicException
+class WrongEntityException extends LogicException
 {
 
 }

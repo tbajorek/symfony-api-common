@@ -1,0 +1,10 @@
+entityName: 'Config\Scope'
+data:
+  -
+    id: 1
+    name: 'Application'
+    sortOrder: 1
+  -
+    id: 2
+    name: 'User'
+    sortOrder: 2

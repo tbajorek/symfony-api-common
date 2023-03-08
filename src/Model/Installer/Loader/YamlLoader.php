@@ -2,13 +2,13 @@
 
 namespace ApiCommon\Model\Installer\Loader;
 
+use ApiCommon\Exception\Installer\LoadDataException;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
 
 class YamlLoader implements LoaderInterface, DataLocationLoader
 {
     use DataLocator;
-
     /**
      * @inheritdoc
      */
@@ -17,11 +17,11 @@ class YamlLoader implements LoaderInterface, DataLocationLoader
         try {
             return Yaml::parseFile($this->getFullFilePath($filePath));
         } catch (ParseException $exception) {
-            printf('Unable to parse the YAML string: %s', $exception->getMessage());
+            throw new LoadDataException(sprintf('Unable to parse the YAML string: %s', $exception->getMessage()));
         }
     }
 
-    public function getType(): string
+    public static function getType(): string
     {
         return 'yaml';
     }

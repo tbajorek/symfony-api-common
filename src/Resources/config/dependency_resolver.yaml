@@ -1,0 +1,8 @@
+services:
+  api_common.dependency_resolver.string_sort_factory:
+    class: ApiCommon\Model\DependencyResolver\StringSortFactory
+  api_common.dependency_resolver.sorter.dependency:
+    class: ApiCommon\Model\DependencyResolver\DependencySorter
+    public: true
+    arguments:
+      - '@api_common.dependency_resolver.string_sort_factory'

@@ -1,8 +1,7 @@
 <?php declare(strict_types=1);
 
-namespace ApiCommon\Model\Installer\Sorter;
+namespace ApiCommon\Model\DependencyResolver;
 
-use ApiCommon\Exception\Installer\CircularReferenceException;
 use ApiCommon\Model\Installer\DependentInstallerInterface;
 use ApiCommon\Model\Installer\InstallerInterface;
 use MJS\TopSort\CircularDependencyException;
@@ -19,22 +18,25 @@ class DependencySorter implements SorterInterface
      * @throws CircularDependencyException
      * @throws ElementNotFoundException
      */
-    public function sort(array $installers): array
+    public function sort(array $objects): array
     {
+        if ($objects === []) {
+            return [];
+        }
         $stringSort = $this->stringSortFactory->create();
         $stringSort->setCircularInterceptor([$this, 'throwCircularDependency']);
-        $mappedInstallers = [];
-        foreach ($installers as $installer) {
-            $installerClass = $installer::class;
-            $mappedInstallers[$installerClass] = $installer;
+        $mappedObjects = [];
+        foreach ($objects as $object) {
+            $objectClass = $object::class;
+            $mappedObjects[$objectClass] = $object;
             $stringSort->add(
-                $installerClass,
-                $installer instanceof DependentInstallerInterface ? $installer->getDependencies() : []
+                $objectClass,
+                $object instanceof DependentClassInterface ? $object->getDependencies() : []
             );
         }
         $sortedClassNames = $stringSort->sort();
-        return array_map(static function (string $installerClass) use ($mappedInstallers): InstallerInterface {
-            return $mappedInstallers[$installerClass];
+        return array_map(static function (string $objectClass) use ($mappedObjects): object {
+            return $mappedObjects[$objectClass];
         }, $sortedClassNames);
     }
 
@@ -43,6 +45,6 @@ class DependencySorter implements SorterInterface
      */
     public function throwCircularDependency(): void
     {
-        throw new CircularReferenceException('There is a circular dependency detected between some installers');
+        throw new CircularReferenceException('There is a circular dependency detected between some classes');
     }
 }

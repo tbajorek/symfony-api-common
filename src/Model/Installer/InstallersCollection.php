@@ -2,10 +2,11 @@
 
 namespace ApiCommon\Model\Installer;
 
-use ApiCommon\Model\Installer\Sorter\SorterInterface;
+use ApiCommon\Model\DependencyResolver\SorterInterface;
 use Exception;
+use Countable;
 
-class InstallersCollection
+class InstallersCollection implements Countable
 {
     /** @var InstallerInterface[]|null */
     private ?array $sortedInstallers = null;
@@ -31,5 +32,10 @@ class InstallersCollection
         $this->sortedInstallers = null;
         $this->installers[] = $installer;
         return $this;
+    }
+
+    public function count(): int
+    {
+        return count($this->installers);
     }
 }

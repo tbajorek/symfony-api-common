@@ -12,9 +12,9 @@ interface ValueInterface extends EntityInterface, UpdatedAtInterface
 
     public function setDefinition(?DefinitionInterface $definition): self;
 
-    public function getScope(): ?string;
+    public function getScope(): ?ScopeInterface;
 
-    public function setScope(string $scope): self;
+    public function setScope(?ScopeInterface $scope): self;
 
     public function getScopeId(): ?Uuid;
 

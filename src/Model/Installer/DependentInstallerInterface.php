@@ -2,7 +2,9 @@
 
 namespace ApiCommon\Model\Installer;
 
-interface DependentInstallerInterface extends InstallerInterface
+use ApiCommon\Model\DependencyResolver\DependentClassInterface;
+
+interface DependentInstallerInterface extends DependentClassInterface
 {
     /**
      * @return string[]

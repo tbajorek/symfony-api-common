@@ -1,4 +1,5 @@
-groups:
+entityName: 'Config\ConfigGroup'
+data:
   -
     id: 1
     label: Application
