@@ -1,0 +1,40 @@
+{
+  "manifests": {
+    "tbajorek/symfony-api-common": {
+      "manifest": {
+        "bundles": {
+          "ApiCommon\\ApiCommonBundle": [
+            "all"
+          ]
+        },
+        "copy-from-recipe": {
+          "config/": "%CONFIG_DIR%/",
+          "src/": "%SRC_DIR%/"
+        },
+        "post-install-output": [
+          "  * Your API is almost ready:",
+          "    1. Create your first API resource in <info>src/ApiResource</info>;",
+          "    2. Go to <info>/api</info> to browse your API",
+          "",
+          "  * To enable the GraphQL support, run <comment>composer require webonyx/graphql-php</>,",
+          "    then browse <info>/api/graphql</info>.",
+          "",
+          "  * <fg=blue>Read</> the documentation at <comment>https://api-platform.com/docs</>"
+        ]
+      },
+      "files": {
+        "config/routes/api_common.yaml": {
+          "contents": [
+            "api_common:",
+            "    resource: .",
+            "    type: api_common",
+            "    prefix: /api",
+            ""
+          ],
+          "executable": false
+        },
+      },
+      "ref": "f210da9a652346fe33ea328216c6ccefdd15d8a2"
+    }
+  }
+}

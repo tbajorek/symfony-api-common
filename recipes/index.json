@@ -1,0 +1,14 @@
+{
+  "recipes": {
+    "tbajorek/symfony-api-common": [
+      "1.0"
+    ]
+  },
+  "branch": "dev",
+  "is_contrib": true,
+  "_links": {
+    "repository": "github.com/tbajorek/symfony-api-common",
+    "origin_template": "{package}:{version}@github.com/tbajorek/symfony-api-common:dev",
+    "recipe_template": "https://api.github.com/repos/tbajorek/symfony-api-common/contents/{package_dotted}.{version}.json"
+  }
+}
