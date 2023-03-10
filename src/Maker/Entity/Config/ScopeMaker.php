@@ -35,8 +35,10 @@ class ScopeMaker extends AbstractEntityMaker
 
     public function getFields(): Generator
     {
-        yield new EntityField('name', Types::STRING, false, ['length' => 255]);
+        yield new EntityField('name', Types::STRING, false, ['length' => 255, 'unique' => true]);
+        yield new EntityField('targetEntity', Types::STRING, true, ['length' => 255]);
         yield new EntityField('sortOrder', Types::INTEGER);
+        yield new EntityField('editRoles', Types::SIMPLE_ARRAY);
     }
 
     public function getDependencies(): array

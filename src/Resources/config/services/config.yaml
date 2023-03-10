@@ -1,0 +1,12 @@
+services:
+  api_common.config.scope.provider:
+    class: ApiCommon\Model\Config\Scope\ScopeProvider
+    arguments:
+      - '@doctrine.orm.default_entity_manager'
+  ApiCommon\Controller\Config\FrontendConfigurationController:
+    public: true
+    autoconfigure: true
+    autowire: true
+    arguments:
+      - '@api_common.config.scope.provider'
+    tags: [ 'controller.service_arguments' ]

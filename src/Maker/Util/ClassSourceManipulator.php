@@ -123,7 +123,7 @@ final class ClassSourceManipulator
                 ['max' => $columnOptions['length']],
                 'Assert'
             );
-            if (!$blank) {
+            if (!$blank && !$nullable) {
                 $attributes[] = $this->buildAttributeNode(NotBlank::class, [], 'Assert');
             }
         }
@@ -467,7 +467,7 @@ final class ClassSourceManipulator
         return $setterNodeBuilder;
     }
 
-    private function addSingularRelation(BaseRelation $relation): void
+    private function addSingularRelation(BaseRelation|RelationManyToOne $relation): void
     {
         $typeHint = $this->addUseStatementIfNecessary($relation->getTargetClassName());
         $phpType = $relation->getCustomReturnType() ? $this->addUseStatementIfNecessary($relation->getCustomReturnType()) : $typeHint;

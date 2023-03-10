@@ -6,3 +6,27 @@ data:
     scope: '@Config\Scope:1'
     scopeId: null
     value: 'en'
+  -
+    id: 2
+    definition: '@Config\Definition:2'
+    scope: '@Config\Scope:1'
+    scopeId: null
+    value: 'dark'
+  -
+    id: 3
+    definition: '@Config\Definition:3'
+    scope: '@Config\Scope:1'
+    scopeId: null
+    value: 'Sample application'
+  -
+    id: 4
+    definition: '@Config\Definition:4'
+    scope: '@Config\Scope:1'
+    scopeId: null
+    value: 'application@example.com'
+  -
+    id: 5
+    definition: '@Config\Definition:4'
+    scope: '@Config\Scope:1'
+    scopeId: null
+    value: 'John Smith'

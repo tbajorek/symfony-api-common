@@ -28,10 +28,12 @@ final class ApiCommonExtension extends Extension
         );
         $loader->load('services.yaml');
 
-        $loader->load('dependency_resolver.yaml');
-        $loader->load('entities.yaml');
-        $loader->load('maker.yaml');
-        $loader->load('installer.yaml');
+        $loader->load('services/config.yaml');
+        $loader->load('services/dependency_resolver.yaml');
+        $loader->load('services/entities.yaml');
+        $loader->load('services/maker.yaml');
+        $loader->load('services/installer.yaml');
+        $loader->load('services/routing.yaml');
 
         $container->setParameter('api_common.config.data', $config);
     }

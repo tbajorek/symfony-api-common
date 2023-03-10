@@ -3,6 +3,7 @@
 namespace ApiCommon\Maker\Entity;
 
 use ApiCommon\Entity\EntityInterface;
+use ApiCommon\Entity\ScopedEntityInterface;
 use ApiCommon\Model\Maker\Entity\EntityField;
 use Doctrine\DBAL\Types\Types;
 use Generator;
@@ -37,11 +38,17 @@ class UserMaker extends AbstractEntityMaker
         ];
     }
 
+    public static function getTableName(): ?string
+    {
+        return 'users';
+    }
+
     public function getInterfaces(): array
     {
         return [
             EntityInterface::class,
             UserInterface::class,
+            ScopedEntityInterface::class,
             PasswordAuthenticatedUserInterface::class
         ];
     }

@@ -3,8 +3,21 @@ data:
   -
     id: 1
     name: 'Application'
+    targetEntity: null
     sortOrder: 1
+    editRoles:
+      - ROLE_ADMIN
   -
     id: 2
     name: 'User'
+    targetEntity: '\App\Entity\User'
+    sortOrder: 3
+    editRoles:
+      - ROLE_ADMIN
+      - ROLE_USER
+  -
+    id: 2
+    name: 'Company'
     sortOrder: 2
+    editRoles:
+      - ROLE_MANAGER

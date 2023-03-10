@@ -30,6 +30,7 @@ class DefinitionMaker extends AbstractEntityMaker
     {
         yield new EntityField('path', Types::STRING, false, ['length' => 255, 'unique' => true]);
         yield new EntityField('label', Types::STRING, false, ['length' => 255]);
+        yield new EntityField('description', Types::STRING, true, ['length' => 255]);
         yield new EntityField('sortOrder', Types::INTEGER);
 
         $groupRelation = new EntityRelation(
@@ -48,6 +49,7 @@ class DefinitionMaker extends AbstractEntityMaker
         yield new EntityField('frontendModel', Types::STRING, false, ['length' => 255]);
         yield new EntityField('backendModel', Types::STRING, false, ['length' => 255]);
         yield new EntityField('metadata', Types::JSON, false, [], Metadata::class);
+        yield new EntityField('frontendVisibility', Types::BOOLEAN);
     }
 
     public static function getEntityClassName(): string

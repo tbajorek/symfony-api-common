@@ -14,7 +14,7 @@ namespace <?= $namespace ?>;
 #[ApiResource]
 <?php endif ?>
 <?php if ($unique_constraint_fields): ?>
-#[UniqueEntity(['<?= $unique_constraint_fields ?>'])]
+#[ORM\UniqueConstraint(name: 'unique_fields_index', columns: ['<?= $unique_constraint_fields ?>'])]
 <?php endif ?>
 class <?= $class_name."\n" ?>
 {
@@ -32,6 +32,11 @@ class <?= $class_name."\n" ?>
     public function getUserIdentifier(): string
     {
         return $this->getId() ? $this->getId()->toRfc4122() : '';
+    }
+
+    public function getParentScopeId(): ?Uuid
+    {
+        return null;
     }
 
     public function eraseCredentials()

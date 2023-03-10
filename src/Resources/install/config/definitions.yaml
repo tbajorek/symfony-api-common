@@ -5,7 +5,7 @@ data:
     configGroup: '@Config\ConfigGroup:1'
     path: 'application/general/default_language'
     label: 'Default language'
-    sortOrder: 1
+    sortOrder: 2
     frontendModel: '\ApiCommon\Model\Config\FrontendModel\SelectModel'
     backendModel: '\ApiCommon\Model\Config\BackendModel\DatabaseValue'
     metadata:
@@ -13,3 +13,56 @@ data:
         options:
           en: English
           pl: Polski
+    frontendVisibility: true
+  -
+    id: 2
+    configGroup: '@Config\ConfigGroup:2'
+    path: 'layout/theme/selected_theme'
+    label: 'Selected theme'
+    sortOrder: 1
+    frontendModel: '\ApiCommon\Model\Config\FrontendModel\SelectModel'
+    backendModel: '\ApiCommon\Model\Config\BackendModel\DatabaseValue'
+    metadata:
+      data:
+        options:
+          dark: Dark
+          light: Light
+    frontendVisibility: true
+  -
+    id: 3
+    configGroup: '@Config\ConfigGroup:1'
+    path: 'application/general/application_name'
+    label: 'Application name'
+    sortOrder: 1
+    frontendModel: '\ApiCommon\Model\Config\FrontendModel\TextModel'
+    backendModel: '\ApiCommon\Model\Config\BackendModel\DatabaseValue'
+    metadata:
+      data:
+        required: true
+    frontendVisibility: true
+  -
+    id: 4
+    configGroup: '@Config\ConfigGroup:1'
+    path: 'application/mailing/email'
+    label: 'Sender email address'
+    description: 'Sender email address used for emails sent from the application'
+    sortOrder: 1
+    frontendModel: '\ApiCommon\Model\Config\FrontendModel\TextModel'
+    backendModel: '\ApiCommon\Model\Config\BackendModel\DatabaseValue'
+    metadata:
+      data:
+        required: true
+    frontendVisibility: false
+  -
+    id: 5
+    configGroup: '@Config\ConfigGroup:1'
+    path: 'application/mailing/name'
+    label: 'Sender email name'
+    description: 'Sender name used for emails sent from the application'
+    sortOrder: 1
+    frontendModel: '\ApiCommon\Model\Config\FrontendModel\TextModel'
+    backendModel: '\ApiCommon\Model\Config\BackendModel\DatabaseValue'
+    metadata:
+      data:
+        required: true
+    frontendVisibility: false

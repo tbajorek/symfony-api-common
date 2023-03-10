@@ -21,3 +21,9 @@ config:
     scope: '@Config\Scope:2'
     scopeId: '@User:1->id'
     value: 'pl'
+  -
+    id: 101
+    definition: '@Config\Definition:2'
+    scope: '@Config\Scope:2'
+    scopeId: '@User:1->id'
+    value: 'light'

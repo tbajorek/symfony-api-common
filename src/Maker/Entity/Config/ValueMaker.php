@@ -83,6 +83,7 @@ class ValueMaker extends AbstractEntityMaker
     public static function getUniqueConstraintFields(): array
     {
         return [
+            'definition_id',
             'scope',
             'scope_id',
         ];

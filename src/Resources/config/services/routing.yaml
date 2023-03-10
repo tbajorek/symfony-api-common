@@ -1,0 +1,4 @@
+services:
+  api_common.routing.controller_loader:
+    class: ApiCommon\Symfony\Routing\ApiControllerLoader
+    tags: [routing.loader]
