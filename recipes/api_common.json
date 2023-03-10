@@ -7,10 +7,6 @@
             "all"
           ]
         },
-        "copy-from-recipe": {
-          "config/": "%CONFIG_DIR%/",
-          "src/": "%SRC_DIR%/"
-        },
         "post-install-output": [
           "  * You installed API Common library. Thank you for using it.",
           "",
@@ -27,7 +23,7 @@
             ""
           ],
           "executable": false
-        },
+        }
       },
       "ref": "f210da9a652346fe33ea328216c6ccefdd15d8a2"
     }
